@@ -14,4 +14,6 @@ import jakarta.servlet.http.HttpSession;
 public interface UserService extends IService<User> {
 
     Result login(LoginFormDTO loginForm, HttpSession session);
+
+    Result logout(HttpSession session);
 }

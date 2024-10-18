@@ -45,6 +45,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String jwt = JwtUtils.generateJwt(claims);
         return Result.ok(jwt);
     }
+
+    @Override
+    public Result logout(HttpSession session) {
+        return Result.ok("退出成功");
+    }
 }
 
 

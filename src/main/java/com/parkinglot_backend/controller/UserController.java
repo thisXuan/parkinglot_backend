@@ -30,6 +30,11 @@ public class UserController {
         return userService.login(loginForm,session);
     }
 
+    @PostMapping("/logout")
+    public Result logout(HttpSession session){
+        return userService.logout(session);
+    }
+
 
 
 }

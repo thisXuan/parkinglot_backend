@@ -1,30 +1,42 @@
 package com.parkinglot_backend.util;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.List;
+/**
+ * 通用返回结果类
+ * @param <T>
+ */
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Result {
-    private Boolean success;
-    private String errorMsg;
-    private Object data;
-    private Long total;
+public class Result<T> {
 
-    public static Result ok(){
-        return new Result(true, null, null, null);
+    private Integer code;
+
+    private String msg; //错误信息
+
+    private T data; //数据
+
+    private Map map = new HashMap(); //动态数据
+
+    public static <T> Result<T> ok(T object) {
+        Result<T> r = new Result<T>();
+        r.data = object;
+        r.code = 200;
+        return r;
     }
-    public static Result ok(Object data){
-        return new Result(true, null, data, null);
+
+    public static <T> Result<T> fail(String msg) {
+        Result r = new Result();
+        r.msg = msg;
+        r.code = 500;
+        return r;
     }
-    public static Result ok(List<?> data, Long total){
-        return new Result(true, null, data, total);
+
+    public Result<T> add(String key, Object value) {
+        this.map.put(key, value);
+        return this;
     }
-    public static Result fail(String errorMsg){
-        return new Result(false, errorMsg, null, null);
-    }
+
 }

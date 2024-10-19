@@ -1,6 +1,7 @@
 package com.parkinglot_backend.controller;
 
 import com.parkinglot_backend.dto.LoginFormDTO;
+import com.parkinglot_backend.dto.RegisterDTO;
 import com.parkinglot_backend.service.UserService;
 import com.parkinglot_backend.util.Result;
 import jakarta.servlet.http.HttpSession;
@@ -35,6 +36,9 @@ public class UserController {
         return userService.logout(session);
     }
 
-
+    @PostMapping("/register")
+    public Result register(@RequestBody RegisterDTO registerDTO) {
+        return userService.register(registerDTO);
+    }
 
 }

@@ -19,5 +19,7 @@ public class User implements Serializable {
 
     private String password;
 
+    private String phone;
+
     private static final long serialVersionUID = 1L;
 }

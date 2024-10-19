@@ -1,6 +1,7 @@
 package com.parkinglot_backend.service;
 
 import com.parkinglot_backend.dto.LoginFormDTO;
+import com.parkinglot_backend.dto.RegisterDTO;
 import com.parkinglot_backend.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.parkinglot_backend.util.Result;
@@ -16,4 +17,6 @@ public interface UserService extends IService<User> {
     Result login(LoginFormDTO loginForm, HttpSession session);
 
     Result logout(HttpSession session);
+
+    Result register(RegisterDTO registerDTO);
 }

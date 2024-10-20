@@ -1,5 +1,6 @@
 package com.parkinglot_backend.controller;
 
+import com.parkinglot_backend.dto.ForgetPasswordDTO;
 import com.parkinglot_backend.dto.LoginFormDTO;
 import com.parkinglot_backend.dto.RegisterDTO;
 import com.parkinglot_backend.service.UserService;
@@ -40,5 +41,11 @@ public class UserController {
     public Result register(@RequestBody RegisterDTO registerDTO) {
         return userService.register(registerDTO);
     }
+
+    @PostMapping("/reset-password")
+    public Result resetPassword(@RequestBody ForgetPasswordDTO forgetPasswordDTO) {
+        return userService.resetPassword(forgetPasswordDTO);
+    }
+
 
 }

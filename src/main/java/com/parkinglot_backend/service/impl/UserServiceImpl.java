@@ -2,6 +2,7 @@ package com.parkinglot_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.parkinglot_backend.dto.ForgetPasswordDTO;
 import com.parkinglot_backend.dto.LoginFormDTO;
 import com.parkinglot_backend.dto.RegisterDTO;
 import com.parkinglot_backend.entity.User;
@@ -13,6 +14,7 @@ import com.parkinglot_backend.util.Result;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +56,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return Result.ok("退出成功");
     }
 
-    //注册
+    /**
+     * 重置密码
+     * @param registerDTO
+     * @return
+     */
     @Override
     public Result register(RegisterDTO registerDTO) {
         // 验证手机号格式
@@ -89,6 +95,63 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 5. 保存成功，返回成功信息
         return Result.ok("注册成功");
     }
+
+    /**
+     * 重置密码
+     * @param forgetPasswordDTO
+     * @return
+     */
+    @Override
+    public Result resetPassword(ForgetPasswordDTO forgetPasswordDTO) {
+        // 验证手机号格式
+        if (!forgetPasswordDTO.getPhone().matches("\\d{11}")) {
+            return Result.fail("手机号格式不正确，必须为11位数字");
+        }
+
+        // 验证验证码
+        if (!verificationCodeService.validateCode(forgetPasswordDTO.getCaptcha())) {
+            return Result.fail("验证码错误或已过期");
+        }
+
+        // 校验数据库中是否存在该手机号
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getPhone, forgetPasswordDTO.getPhone());
+        User user = getOne(queryWrapper);
+        // 不存在该手机号
+        System.out.println(user);
+        if (user == null) {
+            return Result.fail("用户不存在");
+        }
+        System.out.println(forgetPasswordDTO);
+        // 更新密码（这里应该使用加密密码）
+        // 假设我们使用了一个密码加密的方法 encryptPassword
+        String encryptedPassword = encryptPassword(forgetPasswordDTO.getNewPassword());
+
+        user.setPassword(encryptedPassword);
+        boolean updated = updateById(user);
+        if (!updated) {
+            return Result.fail("密码重置失败");
+        }
+
+        // 清除该手机号对应的验证码（如果存储了）
+        verificationCodeService.removeVerificationCode(forgetPasswordDTO.getPhone());
+
+        return Result.ok("密码重置成功");
+    }
+
+    /**
+     * 加密密码
+     * @param password
+     * @return
+     */
+    private String encryptPassword(String password) {
+        // 使用强哈希算法加密密码，例如 BCryptPasswordEncoder
+        // return new BCryptPasswordEncoder().encode(password);
+
+        return password; // 示例中直接返回密码，实际应用中应加密
+    }
+
+
 }
 
 

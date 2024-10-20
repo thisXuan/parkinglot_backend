@@ -34,7 +34,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public Result login(LoginFormDTO loginForm, HttpSession session) {
         // 1. 校验数据库中是否存在
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getName, loginForm.getName());
+        queryWrapper.eq(User::getPhone, loginForm.getPhone());
         User user = getOne(queryWrapper);
         // 2. 不存在，登录失败
         if (user == null) {
@@ -137,6 +137,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         verificationCodeService.removeVerificationCode(forgetPasswordDTO.getPhone());
 
         return Result.ok("密码重置成功");
+    }
+
+    @Override
+    public Result getUserInfo(String phone) {
+        User user = query().eq("phone", phone).one();
+        if (user == null) {
+            return Result.fail("用户不存在！");
+        }
+        return Result.ok(user);
     }
 
     /**

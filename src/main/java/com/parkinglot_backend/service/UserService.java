@@ -23,4 +23,6 @@ public interface UserService extends IService<User> {
     Result register(RegisterDTO registerDTO);
 
     Result resetPassword(ForgetPasswordDTO forgetPasswordDTO);
+
+    Result getUserInfo(String phone);
 }

@@ -34,7 +34,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         if(!StringUtils.hasLength(jwt)){
             log.info("请求头token为空,返回未登录的信息");
             Result error = Result.fail("NOT_LOGIN");
-            //手动转换 对象--json --------> 阿里巴巴fastJSON
+            resp.setStatus(401);
             String notLogin = JSONObject.toJSONString(error);
             resp.getWriter().write(notLogin);
             return false;
@@ -49,6 +49,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             Result error = Result.fail("NOT_LOGIN");
             //手动转换 对象--json --------> 阿里巴巴fastJSON
             String notLogin = JSONObject.toJSONString(error);
+            resp.setStatus(401);
             resp.getWriter().write(notLogin);
             return false;
         }

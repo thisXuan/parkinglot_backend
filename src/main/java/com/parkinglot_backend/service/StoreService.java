@@ -2,6 +2,7 @@ package com.parkinglot_backend.service;
 
 import com.parkinglot_backend.entity.Store;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.parkinglot_backend.util.Result;
 
 /**
 * @author minxuan
@@ -10,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface StoreService extends IService<Store> {
 
+    Result getStoreInfo(int page);
 }

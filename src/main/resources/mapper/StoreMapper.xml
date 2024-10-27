@@ -6,14 +6,14 @@
 
     <resultMap id="BaseResultMap" type="com.parkinglot_backend.entity.Store">
             <id property="id" column="Id" jdbcType="INTEGER"/>
-            <result property="storename" column="StoreName" jdbcType="VARCHAR"/>
-            <result property="servicecategory" column="ServiceCategory" jdbcType="VARCHAR"/>
-            <result property="servicetype" column="ServiceType" jdbcType="VARCHAR"/>
-            <result property="businesshours" column="BusinessHours" jdbcType="VARCHAR"/>
+            <result property="storeName" column="StoreName" jdbcType="VARCHAR"/>
+            <result property="serviceCategory" column="ServiceCategory" jdbcType="VARCHAR"/>
+            <result property="serviceType" column="ServiceType" jdbcType="VARCHAR"/>
+            <result property="businessHours" column="BusinessHours" jdbcType="VARCHAR"/>
             <result property="address" column="Address" jdbcType="VARCHAR"/>
-            <result property="floornumber" column="FloorNumber" jdbcType="INTEGER"/>
+            <result property="floorNumber" column="FloorNumber" jdbcType="INTEGER"/>
             <result property="description" column="Description" jdbcType="VARCHAR"/>
-            <result property="recommendedservices" column="RecommendedServices" jdbcType="OTHER"/>
+            <result property="recommendedServices" column="RecommendedServices" jdbcType="OTHER"/>
     </resultMap>
 
     <sql id="Base_Column_List">

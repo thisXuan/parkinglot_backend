@@ -15,21 +15,27 @@ import lombok.Data;
 public class Store implements Serializable {
     private Integer id;
 
-    private String storename;
+    @TableField("storename")
+    private String storeName;
 
-    private String servicecategory;
+    @TableField("servicecategory")
+    private String serviceCategory;
 
-    private String servicetype;
+    @TableField("servicetype")
+    private String serviceType;
 
-    private String businesshours;
+    @TableField("businesshours")
+    private String businessHours;
 
     private String address;
 
-    private Integer floornumber;
+    @TableField("floornumber")
+    private Integer floorNumber;
 
     private String description;
 
-    private Object recommendedservices;
+    @TableField("recommendedservices")
+    private Object recommendedServices;
 
     private static final long serialVersionUID = 1L;
 }

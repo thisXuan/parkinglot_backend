@@ -22,4 +22,5 @@
         ServiceType,BusinessHours,Address,
         FloorNumber,Description,RecommendedServices,image
     </sql>
+    <select id="searchStoreName" resultType="com.parkinglot_backend.entity.Store"></select>
 </mapper>

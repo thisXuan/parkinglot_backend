@@ -7,6 +7,7 @@ import com.parkinglot_backend.entity.Store;
 import com.parkinglot_backend.service.StoreService;
 import com.parkinglot_backend.mapper.StoreMapper;
 import com.parkinglot_backend.util.Result;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,9 @@ import java.util.List;
 public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
     implements StoreService{
 
+    @Resource
+    private StoreMapper storeMapper;
+
     @Override
     public Result getStoreInfo(int page) {
         // 设置分页, 固定设置每页查询为10页
@@ -27,6 +31,15 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
         List<Store> list = query().list();
         PageInfo<Store> pageInfo = new PageInfo<>(list);
         return Result.ok(pageInfo.getList());
+    }
+
+    @Override
+    public Result queryStoreInfo(String query) {
+        List<Store> stores = storeMapper.searchStore(query);
+        if(stores.isEmpty()){
+            return Result.fail("未查找到相关店铺");
+        }
+        return Result.ok(stores);
     }
 }
 

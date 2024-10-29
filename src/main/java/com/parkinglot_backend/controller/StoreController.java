@@ -26,4 +26,9 @@ public class StoreController {
         return storeService.getStoreInfo(page);
     }
 
+    @GetMapping("/queryStoreInfo")
+    public Result queryStoreInfo(@RequestParam String query){
+        return storeService.queryStoreInfo(query);
+    }
+
 }

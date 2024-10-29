@@ -12,4 +12,6 @@ import com.parkinglot_backend.util.Result;
 public interface StoreService extends IService<Store> {
 
     Result getStoreInfo(int page);
+
+    Result queryStoreInfo(String query);
 }

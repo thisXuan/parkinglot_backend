@@ -14,11 +14,12 @@
             <result property="floorNumber" column="FloorNumber" jdbcType="INTEGER"/>
             <result property="description" column="Description" jdbcType="VARCHAR"/>
             <result property="recommendedServices" column="RecommendedServices" jdbcType="OTHER"/>
+            <result property="image" column="image" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         Id,StoreName,ServiceCategory,
         ServiceType,BusinessHours,Address,
-        FloorNumber,Description,RecommendedServices
+        FloorNumber,Description,RecommendedServices,image
     </sql>
 </mapper>

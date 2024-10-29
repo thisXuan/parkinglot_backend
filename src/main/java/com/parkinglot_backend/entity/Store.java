@@ -37,5 +37,7 @@ public class Store implements Serializable {
     @TableField("recommendedservices")
     private Object recommendedServices;
 
+    private String image;
+
     private static final long serialVersionUID = 1L;
 }

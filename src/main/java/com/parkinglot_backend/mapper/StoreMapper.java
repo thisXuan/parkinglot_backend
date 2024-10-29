@@ -2,6 +2,7 @@ package com.parkinglot_backend.mapper;
 
 import com.parkinglot_backend.entity.Store;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -15,6 +16,12 @@ import java.util.List;
 public interface StoreMapper extends BaseMapper<Store> {
     @Select("SELECT * FROM Store WHERE StoreName LIKE CONCAT('%', #{name}, '%')")
     List<Store> searchStore(String name);
+
+    @Select("SELECT * FROM Store")
+    List<Store> findAllStores();
+
+    @Select("SELECT * FROM Store WHERE ServiceCategory = #{category}")
+    List<Store> findStoresByCategory(@Param("category") String category);
 }
 
 

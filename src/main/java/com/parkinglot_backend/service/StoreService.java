@@ -14,4 +14,7 @@ public interface StoreService extends IService<Store> {
     Result getStoreInfo(int page);
 
     Result queryStoreInfo(String query);
+
+    Result getServiceCategory(String query);
+
 }

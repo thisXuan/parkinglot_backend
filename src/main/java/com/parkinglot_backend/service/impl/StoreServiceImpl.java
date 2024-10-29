@@ -41,6 +41,22 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
         }
         return Result.ok(stores);
     }
+
+    @Override
+    public Result getServiceCategory(String query) {
+        List<Store> stores;
+        if ("全部".equals(query)) {
+            stores = storeMapper.findAllStores(); // 这个方法返回所有商店
+        } else {
+            stores = storeMapper.findStoresByCategory(query); // 根据类别查询商店
+        }
+        if (stores.isEmpty()) {
+            return Result.fail("未查找到相关店铺");
+        }
+        return Result.ok(stores);
+    }
+
+
 }
 
 

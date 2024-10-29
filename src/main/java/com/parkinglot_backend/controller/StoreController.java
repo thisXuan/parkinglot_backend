@@ -31,4 +31,9 @@ public class StoreController {
         return storeService.queryStoreInfo(query);
     }
 
+    @GetMapping("/getServiceCategory")
+    public Result getServiceCategory(@RequestParam String query){
+        return storeService.getServiceCategory(query);
+    }
+
 }

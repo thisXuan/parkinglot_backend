@@ -13,6 +13,7 @@ import com.parkinglot_backend.util.JwtUtils;
 import com.parkinglot_backend.util.Result;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,15 +83,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (user != null) {
             return Result.fail("用户名或手机号已存在!");
         }
+
         // 3. 不存在，保存新用户
         user = new User();
         user.setName(registerDTO.getUsername());
         user.setPhone(registerDTO.getPhone());
-        user.setPassword(registerDTO.getPassword()); // 这里应该使用加密密码
-        boolean saved = save(user);
-        // 4. 保存失败，注册失败
-        if (!saved) {
-            return Result.fail("注册失败");
+        // 这里应该使用加密密码
+        user.setPassword(encryptPassword(registerDTO.getPassword()));
+        try {
+            save(user);
+        } catch (Exception e) {
+            // 4. 保存失败，注册失败
+            if (e instanceof DataIntegrityViolationException) {
+                // 处理唯一性约束违反异常
+                return Result.fail("用户名或手机号已存在!");
+            } else {
+                return Result.fail("注册失败");
+            }
         }
         // 5. 保存成功，返回成功信息
         return Result.ok("注册成功");

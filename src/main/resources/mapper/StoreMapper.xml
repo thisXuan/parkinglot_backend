@@ -15,12 +15,14 @@
             <result property="description" column="Description" jdbcType="VARCHAR"/>
             <result property="recommendedServices" column="RecommendedServices" jdbcType="OTHER"/>
             <result property="image" column="image" jdbcType="VARCHAR"/>
+            <result property="x" column="x" jdbcType="VARCHAR"/>
+            <result property="y" column="y" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         Id,StoreName,ServiceCategory,
         ServiceType,BusinessHours,Address,
-        FloorNumber,Description,RecommendedServices,image
+        FloorNumber,Description,RecommendedServices,image,x,y
     </sql>
     <select id="searchStoreName" resultType="com.parkinglot_backend.entity.Store"></select>
 </mapper>

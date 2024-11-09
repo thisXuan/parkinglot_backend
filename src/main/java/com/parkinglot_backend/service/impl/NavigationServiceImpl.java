@@ -1,6 +1,7 @@
 package com.parkinglot_backend.service.impl;
 
 import com.parkinglot_backend.dataStructure.Node;
+import com.parkinglot_backend.dto.NavigationPoint;
 import com.parkinglot_backend.entity.Points;
 import com.parkinglot_backend.entity.Connection;
 import com.parkinglot_backend.mapper.ConnectionMapper;
@@ -36,7 +37,12 @@ public class NavigationServiceImpl implements NavigationService {
 //    }
 
     @Override
-    public Result getPath(int startX, int startY, int endX, int endY) {
+    public Result getPath(NavigationPoint navigationPoint) {
+        //int startX, int startY, int endX, int endY;
+        int startX = navigationPoint.getStartX();
+        int startY = navigationPoint.getStartY();
+        int endX = navigationPoint.getEndX();
+        int endY = navigationPoint.getEndY();
         // 使用PointMapper从数据库获取所有点坐标记录
         List<Points> pointsFromDb = pointsMapper.selectAllCoordinates();
 

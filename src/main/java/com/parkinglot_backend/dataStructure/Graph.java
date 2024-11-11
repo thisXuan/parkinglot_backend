@@ -15,7 +15,7 @@ public class Graph {
     public void addEdge(Point u, Point v) {
         adjList.computeIfAbsent(u, k -> new ArrayList<>()).add(v);
         // If the graph is undirected, also add v -> u
-        //adjList.computeIfAbsent(v, k -> new ArrayList<>()).add(u);
+        adjList.computeIfAbsent(v, k -> new ArrayList<>()).add(u);
     }
 
     public List<Point> getNeighbors(Point node) {

@@ -30,6 +30,8 @@ public class NavigationServiceImpl implements NavigationService {
     @Resource
     private ConnectionMapper connectionMapper;
 
+   // Map<Integer, Point> pointMap = new HashMap<>();
+
 //
 //    public NavigationServiceImpl(PointMapper pointsMapper, ConnectionMapper connectionMapper) {
 //        this.pointsMapper = pointsMapper;
@@ -45,18 +47,48 @@ public class NavigationServiceImpl implements NavigationService {
         int endY = navigationPoint.getEndY();
         // 使用PointMapper从数据库获取所有点坐标记录
         List<Points> pointsFromDb = pointsMapper.selectAllCoordinates();
+        // 将点的ID和对应的Point对象存储在HashMap中
+        Map<Integer, Point> pointMap = new HashMap<>();
+        for (Points pointFromDb : pointsFromDb) {
+            int id = pointFromDb.getId(); // 假设Points类有getId()方法
+            Point point = new Point(pointFromDb.getXCoordinate(), pointFromDb.getYCoordinate());
+            pointMap.put(id, point);
+        }
 
         List<Point> points = pointsFromDb.stream()
-                .map(p -> new Point(p.getXCoordinate(), p.getYCoordinate()))
+                .map(p -> pointMap.get(p.getId())) // 使用pointMap来获取Point对象
                 .collect(Collectors.toList());
+
+//        // 打印所有点信息
+//        System.out.println("Points from DB:");
+//        points.forEach(point -> System.out.println("Point: (" + point.x + ", " + point.y + ")"));
+
+
         List<Connection> connections = connectionMapper.selectAllConnections();
 
-        Graph graph = buildGraph(points, connections);
+//        // 打印所有连接信息
+//        System.out.println("\nConnections from DB:");
+//        connections.forEach(connection -> System.out.println("Connection: " + connection.getPointId1() + " -> " + connection.getPointId2()));
+        // 打印当前时间1
+        long startTime1 = System.currentTimeMillis();
+        Graph graph = buildGraph(pointMap, points, connections);
+        //当前时间1
+        long startTime = System.currentTimeMillis();
+        long timeDifference1 = startTime - startTime1;
+        System.out.println("时间差1: " + timeDifference1 + "毫秒");
 
         Point startPoint = new Point(startX, startY);
         Point endPoint = new Point(endX, endY);
 
         List<Point> pathCoordinates = aStar(graph, startPoint, endPoint);
+
+        // 打印当前时间2
+        long endTime = System.currentTimeMillis();
+        System.out.println("当前时间2: " + endTime);
+        // 计算时间差
+        long timeDifference = endTime - startTime;
+        System.out.println("时间差: " + timeDifference + "毫秒");
+
         // 打印路径
         if (pathCoordinates != null && !pathCoordinates.isEmpty()) {
             System.out.println("Path found:");
@@ -72,24 +104,24 @@ public class NavigationServiceImpl implements NavigationService {
         return Result.ok(pathCoordinates);
     }
 
-    private Graph buildGraph(List<Point> points, List<Connection> connections) {
+    private Graph buildGraph(Map<Integer, Point> pointMap, List<Point> points, List<Connection> connections) {
         Graph graph = new Graph();
 
         // 添加点到图中
         for (Connection connection : connections) {
-            // 根据连接中的点ID分别查询x和y坐标
-            int x1 = pointsMapper.selectXById(connection.getPointId1());
-            int y1 = pointsMapper.selectYById(connection.getPointId1());
-            int x2 = pointsMapper.selectXById(connection.getPointId2());
-            int y2 = pointsMapper.selectYById(connection.getPointId2());
+            Integer pointId1 = connection.getPointId1();
+            Integer pointId2 = connection.getPointId2();
 
-            // 创建 Point 对象
-            Point point1 = new Point(x1, y1);
-            Point point2 = new Point(x2, y2);
+            // 从pointMap中获取Point对象
+            Point point1 = pointMap.get(pointId1);
+            Point point2 = pointMap.get(pointId2);
 
-            // 添加自环或连接边
-            graph.addEdge(point1, point1);  // 自环
-            graph.addEdge(point1, point2);  // 添加连接点的边
+            // 如果两个点都存在，则添加边
+            if (point1 != null && point2 != null) {
+                // 添加自环和连接边
+                graph.addEdge(point1, point1);  // 自环
+                graph.addEdge(point1, point2);  // 添加连接点的边
+            }
         }
         return graph;
     }

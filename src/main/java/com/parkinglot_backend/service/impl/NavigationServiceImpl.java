@@ -99,7 +99,7 @@ public class NavigationServiceImpl implements NavigationService {
             System.out.println("No path found.");
         }
         if (pathCoordinates == null || pathCoordinates.isEmpty()) {
-            return Result.fail("No path found");
+            return Result.fail("未找到路径");
         }
         return Result.ok(pathCoordinates);
     }

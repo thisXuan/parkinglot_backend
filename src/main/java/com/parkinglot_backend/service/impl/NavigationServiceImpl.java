@@ -45,13 +45,30 @@ public class NavigationServiceImpl implements NavigationService {
         int startY = navigationPoint.getStartY();
         int endX = navigationPoint.getEndX();
         int endY = navigationPoint.getEndY();
+
+        Integer startId = pointsMapper.selectIdByCoordinates(startX, startY);
+        Integer endId = pointsMapper.selectIdByCoordinates(endX, endY);
+
+        if (startId == null || endId == null) {
+            return Result.fail("起点或终点坐标未找到");
+        }
+        // 根据ID查询起点和终点的详细信息
+        Points startPointsFromDb = pointsMapper.selectCoordinatesById(startId);
+        Points endPointsFromDb = pointsMapper.selectCoordinatesById(endId);
+
+        // 使用查询的坐标、楼层和电梯信息创建Point对象
+        Point startPoint = new Point(startPointsFromDb.getXCoordinate(), startPointsFromDb.getYCoordinate(),
+                startPointsFromDb.getFloor(), startPointsFromDb.getIsElevator());
+        Point endPoint = new Point(endPointsFromDb.getXCoordinate(), endPointsFromDb.getYCoordinate(),
+                endPointsFromDb.getFloor(), endPointsFromDb.getIsElevator());
+
         // 使用PointMapper从数据库获取所有点坐标记录
         List<Points> pointsFromDb = pointsMapper.selectAllCoordinates();
         // 将点的ID和对应的Point对象存储在HashMap中
         Map<Integer, Point> pointMap = new HashMap<>();
         for (Points pointFromDb : pointsFromDb) {
             int id = pointFromDb.getId(); // 假设Points类有getId()方法
-            Point point = new Point(pointFromDb.getXCoordinate(), pointFromDb.getYCoordinate());
+            Point point = new Point(pointFromDb.getXCoordinate(), pointFromDb.getYCoordinate(), pointFromDb.getFloor(), pointFromDb.getIsElevator());
             pointMap.put(id, point);
         }
 
@@ -77,8 +94,7 @@ public class NavigationServiceImpl implements NavigationService {
         long timeDifference1 = startTime - startTime1;
         System.out.println("时间差1: " + timeDifference1 + "毫秒");
 
-        Point startPoint = new Point(startX, startY);
-        Point endPoint = new Point(endX, endY);
+
 
         List<Point> pathCoordinates = aStar(graph, startPoint, endPoint);
 
@@ -93,7 +109,7 @@ public class NavigationServiceImpl implements NavigationService {
         if (pathCoordinates != null && !pathCoordinates.isEmpty()) {
             System.out.println("Path found:");
             for (Point point : pathCoordinates) {
-                System.out.println("Point: (" + point.x + ", " + point.y + ")");
+                System.out.println("Point: (" + point.x + ", " + point.y + ", "+ point.floor + ", "+ point.isElevator+ ")");
             }
         } else {
             System.out.println("No path found.");
@@ -107,22 +123,34 @@ public class NavigationServiceImpl implements NavigationService {
     private Graph buildGraph(Map<Integer, Point> pointMap, List<Point> points, List<Connection> connections) {
         Graph graph = new Graph();
 
-        // 添加点到图中
         for (Connection connection : connections) {
             Integer pointId1 = connection.getPointId1();
             Integer pointId2 = connection.getPointId2();
 
-            // 从pointMap中获取Point对象
+            // 获取两个点的信息
             Point point1 = pointMap.get(pointId1);
             Point point2 = pointMap.get(pointId2);
 
-            // 如果两个点都存在，则添加边
             if (point1 != null && point2 != null) {
-                // 添加自环和连接边
-                graph.addEdge(point1, point1);  // 自环
-                graph.addEdge(point1, point2);  // 添加连接点的边
+                // 获取点的楼层和电梯信息
+                String floor1 = point1.getFloor();
+                String floor2 = point2.getFloor();
+                boolean isElevator1 = point1.isElevator();
+                boolean isElevator2 = point2.isElevator();
+
+                // 判断是否可以建立连接
+                if (floor1.equals(floor2) || (isElevator1 && isElevator2)) {
+                   // System.out.println("Point: (" + point1.x + ", " + point1.y + point1.floor + point1.isElevator+ ")");
+                   // System.out.println("Point: (" + point2.x + ", " + point2.y + point2.floor + point2.isElevator+ ")");
+                    // 如果两个点在同一层，或者它们都与电梯连接，则建立边
+                    //graph.addEdge(point1, point1);
+                    graph.addEdge(point1, point2);
+                }
             }
         }
+        //System.out.println("Graph edges:");
+        //graph.printEdges();
+
         return graph;
     }
     // A*算法实现，返回从起点到终点的路径
@@ -179,6 +207,7 @@ public class NavigationServiceImpl implements NavigationService {
         List<Point> path = new ArrayList<>();
         while (node != null) {
             path.add(0, node.point);
+
             node = node.parent;
         }
         return path;

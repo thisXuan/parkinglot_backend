@@ -18,6 +18,16 @@ public class Graph {
         adjList.computeIfAbsent(v, k -> new ArrayList<>()).add(u);
     }
 
+    public void printEdges() {
+        for (Map.Entry<Point, List<Point>> entry : adjList.entrySet()) {
+            Point source = entry.getKey();
+            List<Point> neighbors = entry.getValue();
+            for (Point neighbor : neighbors) {
+                System.out.println("Edge: " + source + " -> " + neighbor);
+            }
+        }
+    }
+
     public List<Point> getNeighbors(Point node) {
         return adjList.getOrDefault(node, new ArrayList<>());
     }

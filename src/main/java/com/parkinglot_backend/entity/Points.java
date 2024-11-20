@@ -24,5 +24,11 @@ public class Points implements Serializable {
     @TableField("y_coordinate")
     private Integer yCoordinate;
 
+    @TableField("floor")
+    private String floor;
+
+    @TableField("is_elevator")
+    private Boolean isElevator;
+
     // 其他字段...
 }

@@ -8,12 +8,12 @@ import java.util.Objects;
  * @Description:
  */
 public class Point {
-    public int x;
-    public int y;
+    public double x;
+    public double y;
     public String floor;        // 楼层信息
     public boolean isElevator;  // 是否是电梯
 
-    public Point(int x, int y, String floor, boolean isElevator) {
+    public Point(double x, double y, String floor, boolean isElevator) {
         this.x = x;
         this.y = y;
         this.floor = floor;

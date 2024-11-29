@@ -40,21 +40,17 @@ public class NavigationServiceImpl implements NavigationService {
 
     @Override
     public Result getPath(NavigationPoint navigationPoint) {
-        //int startX, int startY, int endX, int endY;
-        double startX = navigationPoint.getStartX();
-        double startY = navigationPoint.getStartY();
-        double endX = navigationPoint.getEndX();
-        double endY = navigationPoint.getEndY();
-
-        Integer startId = pointsMapper.selectIdByCoordinates(startX, startY);
-        Integer endId = pointsMapper.selectIdByCoordinates(endX, endY);
-
-        if (startId == null || endId == null) {
-            return Result.fail("起点或终点坐标未找到");
-        }
         // 根据ID查询起点和终点的详细信息
-        Points startPointsFromDb = pointsMapper.selectCoordinatesById(startId);
-        Points endPointsFromDb = pointsMapper.selectCoordinatesById(endId);
+        Points startPointsFromDb = pointsMapper.selectCoordinatesById(navigationPoint.getStartId());
+        Points endPointsFromDb = pointsMapper.selectCoordinatesById(navigationPoint.getEndId());
+
+        if(startPointsFromDb == null) {
+            return Result.fail("未找到起始点");
+        }
+
+        if(endPointsFromDb == null) {
+            return Result.fail("未找到终点");
+        }
 
         // 使用查询的坐标、楼层和电梯信息创建Point对象
         Point startPoint = new Point(startPointsFromDb.getXCoordinate(), startPointsFromDb.getYCoordinate(),

@@ -19,10 +19,10 @@ public class Points implements Serializable {
     private Integer id;
 
     @TableField("x_coordinate")
-    private Integer xCoordinate;
+    private Double xCoordinate;
 
     @TableField("y_coordinate")
-    private Integer yCoordinate;
+    private Double yCoordinate;
 
     @TableField("floor")
     private String floor;

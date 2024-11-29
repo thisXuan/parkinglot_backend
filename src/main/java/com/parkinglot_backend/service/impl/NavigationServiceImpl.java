@@ -41,10 +41,10 @@ public class NavigationServiceImpl implements NavigationService {
     @Override
     public Result getPath(NavigationPoint navigationPoint) {
         //int startX, int startY, int endX, int endY;
-        int startX = navigationPoint.getStartX();
-        int startY = navigationPoint.getStartY();
-        int endX = navigationPoint.getEndX();
-        int endY = navigationPoint.getEndY();
+        double startX = navigationPoint.getStartX();
+        double startY = navigationPoint.getStartY();
+        double endX = navigationPoint.getEndX();
+        double endY = navigationPoint.getEndY();
 
         Integer startId = pointsMapper.selectIdByCoordinates(startX, startY);
         Integer endId = pointsMapper.selectIdByCoordinates(endX, endY);

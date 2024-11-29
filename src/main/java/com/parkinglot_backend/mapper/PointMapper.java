@@ -14,7 +14,7 @@ public interface PointMapper extends BaseMapper<Points> {
     Points selectCoordinatesById(int id);
 
     @Select("SELECT id FROM Points WHERE x_coordinate = #{x} AND y_coordinate = #{y}")
-    Integer selectIdByCoordinates(@Param("x") int x, @Param("y") int y);
+    Integer selectIdByCoordinates(@Param("x") double x, @Param("y") double y);
 
 
 }

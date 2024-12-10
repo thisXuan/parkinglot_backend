@@ -101,19 +101,30 @@ public class NavigationServiceImpl implements NavigationService {
         long timeDifference = endTime - startTime;
         System.out.println("时间差: " + timeDifference + "毫秒");
 
+        if (pathCoordinates == null || pathCoordinates.isEmpty()) {
+            return Result.fail("未找到路径");
+        }
+
+        // 处理一下pathCoordinates，只有起点和终点所在楼层的路径
+        List<Point> list = new ArrayList<>();
+
+        for(Point point : pathCoordinates) {
+            if(point.getFloor().equals(startPoint.getFloor()) || point.getFloor().equals(endPoint.getFloor())) {
+                list.add(point);
+            }
+        }
+
         // 打印路径
-        if (pathCoordinates != null && !pathCoordinates.isEmpty()) {
+        if (!list.isEmpty()) {
             System.out.println("Path found:");
-            for (Point point : pathCoordinates) {
+            for (Point point : list) {
                 System.out.println("Point: (" + point.x + ", " + point.y + ", "+ point.floor + ", "+ point.isElevator+ ")");
             }
         } else {
             System.out.println("No path found.");
         }
-        if (pathCoordinates == null || pathCoordinates.isEmpty()) {
-            return Result.fail("未找到路径");
-        }
-        return Result.ok(pathCoordinates);
+
+        return Result.ok(list);
     }
 
     private Graph buildGraph(Map<Integer, Point> pointMap, List<Point> points, List<Connection> connections) {

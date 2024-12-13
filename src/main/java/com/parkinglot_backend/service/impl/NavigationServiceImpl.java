@@ -1,11 +1,14 @@
 package com.parkinglot_backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.parkinglot_backend.dataStructure.Node;
 import com.parkinglot_backend.dto.NavigationPoint;
 import com.parkinglot_backend.entity.Points;
 import com.parkinglot_backend.entity.Connection;
+import com.parkinglot_backend.entity.Store;
 import com.parkinglot_backend.mapper.ConnectionMapper;
 import com.parkinglot_backend.mapper.PointMapper;
+import com.parkinglot_backend.mapper.StoreMapper;
 import com.parkinglot_backend.service.NavigationService;
 import com.parkinglot_backend.util.Result;
 import com.parkinglot_backend.dataStructure.Point;
@@ -29,8 +32,10 @@ public class NavigationServiceImpl implements NavigationService {
     private PointMapper pointsMapper;
     @Resource
     private ConnectionMapper connectionMapper;
+    @Autowired
+    private StoreMapper storeMapper;
 
-   // Map<Integer, Point> pointMap = new HashMap<>();
+    // Map<Integer, Point> pointMap = new HashMap<>();
 
 //
 //    public NavigationServiceImpl(PointMapper pointsMapper, ConnectionMapper connectionMapper) {
@@ -40,9 +45,32 @@ public class NavigationServiceImpl implements NavigationService {
 
     @Override
     public Result getPath(NavigationPoint navigationPoint) {
+        // 前端传入起点name和终点name，查询数据库获得两个点的point id
+        QueryWrapper<Store> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("StoreName", navigationPoint.getStartName());
+        Store store = storeMapper.selectOne(queryWrapper);
+        if(store == null) {
+            return Result.fail("起始点商铺未找到");
+        }
+        Integer start_pointId = storeMapper.findPointIdByStoreId(store.getId());
+        if(start_pointId == null) {
+            return Result.fail("未找到起始点");
+        }
+
+        QueryWrapper<Store> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("StoreName", navigationPoint.getEndName());
+        Store store1 = storeMapper.selectOne(queryWrapper1);
+        if(store1 == null) {
+            return Result.fail("终点商铺未找到");
+        }
+        Integer end_pointId = storeMapper.findPointIdByStoreId(store1.getId());
+        if(end_pointId == null) {
+            return Result.fail("未找到终点");
+        }
+
         // 根据ID查询起点和终点的详细信息
-        Points startPointsFromDb = pointsMapper.selectCoordinatesById(navigationPoint.getStartId());
-        Points endPointsFromDb = pointsMapper.selectCoordinatesById(navigationPoint.getEndId());
+        Points startPointsFromDb = pointsMapper.selectCoordinatesById(start_pointId);
+        Points endPointsFromDb = pointsMapper.selectCoordinatesById(end_pointId);
 
         if(startPointsFromDb == null) {
             return Result.fail("未找到起始点");

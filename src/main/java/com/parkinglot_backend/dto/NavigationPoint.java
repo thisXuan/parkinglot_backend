@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class NavigationPoint {
-   private int startId;
-   private int endId;
+   private String startName;
+   private String endName;
 }

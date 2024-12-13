@@ -36,4 +36,9 @@ public class StoreController {
         return storeService.getServiceCategory(query);
     }
 
+    @GetMapping("/getStoreName")
+    public Result getStoreName(){
+        return storeService.getStoreName();
+    }
+
 }

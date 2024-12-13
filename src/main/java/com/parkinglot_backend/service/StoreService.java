@@ -17,4 +17,5 @@ public interface StoreService extends IService<Store> {
 
     Result getServiceCategory(String query);
 
+    Result getStoreName();
 }

@@ -56,6 +56,12 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
         return Result.ok(stores);
     }
 
+    @Override
+    public Result getStoreName() {
+        List<String> allStoreNames = storeMapper.findAllStoreNames();
+        return Result.ok(allStoreNames);
+    }
+
 
 }
 

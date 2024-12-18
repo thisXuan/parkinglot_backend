@@ -17,4 +17,5 @@ public interface PointMapper extends BaseMapper<Points> {
     Integer selectIdByCoordinates(@Param("x") double x, @Param("y") double y);
 
 
+
 }

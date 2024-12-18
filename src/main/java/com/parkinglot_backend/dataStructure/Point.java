@@ -24,6 +24,7 @@ public class Point {
     public String getFloor() {
         return floor;
     }
+    public boolean getIsElevator() {return isElevator;}
 
     // 设置楼层信息
     public void setFloor(String floor) {
@@ -59,5 +60,11 @@ public class Point {
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
+    }
+    public double getX() {
+        return x;
+    }
+    public double getY() {
+        return y;
     }
 }

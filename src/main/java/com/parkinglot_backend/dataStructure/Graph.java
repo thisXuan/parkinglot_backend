@@ -28,6 +28,10 @@ public class Graph {
         }
     }
 
+    // 获取所有点的邻接列表
+    public Map<Point, List<Point>> getAdjList() {
+        return adjList;
+    }
     public List<Point> getNeighbors(Point node) {
         return adjList.getOrDefault(node, new ArrayList<>());
     }

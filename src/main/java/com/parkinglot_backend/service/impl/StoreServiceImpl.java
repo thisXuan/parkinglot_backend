@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.parkinglot_backend.entity.Store;
+import com.parkinglot_backend.mapper.ParkingSpotMapper;
 import com.parkinglot_backend.service.StoreService;
 import com.parkinglot_backend.mapper.StoreMapper;
 import com.parkinglot_backend.util.Result;
@@ -23,6 +24,9 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
 
     @Resource
     private StoreMapper storeMapper;
+
+    @Resource
+    private ParkingSpotMapper parkingSpotMapper;
 
     @Override
     public Result getStoreInfo(int page) {
@@ -58,8 +62,10 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
 
     @Override
     public Result getStoreName() {
-        List<String> allStoreNames = storeMapper.findAllStoreNames();
-        return Result.ok(allStoreNames);
+        List<String> allNames = storeMapper.findAllStoreNames();
+        List<String> parkingNames = parkingSpotMapper.findAllName();
+        allNames.addAll(parkingNames);
+        return Result.ok(allNames);
     }
 
 

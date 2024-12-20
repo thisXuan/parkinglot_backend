@@ -11,5 +11,7 @@ public interface ParkingSpotMapper extends BaseMapper<ParkingSpot> {
     @Select("SELECT spot_id FROM ParkingSpots WHERE spot_id=#{storeId}")
     Integer findPointIdByParkId(Integer storeId);
 
+    @Select("SELECT spot_name FROM ParkingSpots")
+    List<String> findAllName();
 
 }

@@ -39,9 +39,5 @@ public class Store implements Serializable {
 
     private String image;
 
-    private String x;
-
-    private String y;
-
     private static final long serialVersionUID = 1L;
 }

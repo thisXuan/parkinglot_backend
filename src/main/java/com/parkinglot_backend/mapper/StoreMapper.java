@@ -23,7 +23,9 @@ public interface StoreMapper extends BaseMapper<Store> {
     @Select("SELECT * FROM Store WHERE ServiceCategory = #{category}")
     List<Store> findStoresByCategory(@Param("category") String category);
 
-    @Select("SELECT StoreName FROM Store")
+    @Select("SELECT StoreName\n" +
+            "FROM Store,Store_Point\n" +
+            "WHERE Store.id = Store_Point.store_id")
     List<String> findAllStoreNames();
 
     @Select("SELECT point_id FROM Store_Point WHERE store_id=#{storeId}")

@@ -12,6 +12,6 @@ public interface ParkingPointMapper extends BaseMapper<ParkingPoint> {
     @Select("SELECT id, x_coordinate, y_coordinate, floor, is_elevator FROM parking_lot")
     List<ParkingPoint> selectAllCoordinates();
 
-    @Select("SELECT x_coordinate, y_coordinate, floor, is_elevator FROM parking_lot WHERE id = #{id}")
+    @Select("SELECT id, x_coordinate, y_coordinate, floor, is_elevator FROM parking_lot WHERE id = #{id}")
     Points selectCoordinatesById(int id);
 }

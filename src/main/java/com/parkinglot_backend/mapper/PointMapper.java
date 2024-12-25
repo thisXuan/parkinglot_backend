@@ -10,7 +10,7 @@ public interface PointMapper extends BaseMapper<Points> {
     @Select("SELECT id, x_coordinate, y_coordinate, floor, is_elevator FROM Points")
     List<Points> selectAllCoordinates();
 
-    @Select("SELECT x_coordinate, y_coordinate, floor, is_elevator FROM Points WHERE id = #{id}")
+    @Select("SELECT id, x_coordinate, y_coordinate, floor, is_elevator FROM Points WHERE id = #{id}")
     Points selectCoordinatesById(int id);
 
     @Select("SELECT id FROM Points WHERE x_coordinate = #{x} AND y_coordinate = #{y}")

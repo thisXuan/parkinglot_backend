@@ -123,9 +123,9 @@ public class NavigationServiceImpl implements NavigationService {
         }
 
         // 使用查询的坐标、楼层和电梯信息创建Point对象
-        Point startPoint = new Point(startPointsFromDb.getXCoordinate(), startPointsFromDb.getYCoordinate(),
+        Point startPoint = new Point(startPointsFromDb.getId(),startPointsFromDb.getXCoordinate(), startPointsFromDb.getYCoordinate(),
                 startPointsFromDb.getFloor(), startPointsFromDb.getIsElevator());
-        Point endPoint = new Point(endPointsFromDb.getXCoordinate(), endPointsFromDb.getYCoordinate(),
+        Point endPoint = new Point(endPointsFromDb.getId(),endPointsFromDb.getXCoordinate(), endPointsFromDb.getYCoordinate(),
                 endPointsFromDb.getFloor(), endPointsFromDb.getIsElevator());
 
         // 使用PointMapper从数据库获取所有点坐标记录
@@ -136,12 +136,12 @@ public class NavigationServiceImpl implements NavigationService {
         Map<Integer, Point> parkingLotpointMap = new HashMap<>();
         for (Points pointFromDb : pointsFromDb) {
             int id = pointFromDb.getId(); // 假设Points类有getId()方法
-            Point point = new Point(pointFromDb.getXCoordinate(), pointFromDb.getYCoordinate(), pointFromDb.getFloor(), pointFromDb.getIsElevator());
+            Point point = new Point(pointFromDb.getId(),pointFromDb.getXCoordinate(), pointFromDb.getYCoordinate(), pointFromDb.getFloor(), pointFromDb.getIsElevator());
             pointMap.put(id, point);
         }
         for (ParkingPoint e : parkingPointsFromDb){
             int id = e.getId();
-            Point point = new Point(e.getXCoordinate(), e.getYCoordinate(), e.getFloor(), e.getIsElevator());
+            Point point = new Point(e.getId(),e.getXCoordinate(), e.getYCoordinate(), e.getFloor(), e.getIsElevator());
             parkingLotpointMap.put(id, point);
         }
 
@@ -202,7 +202,7 @@ public class NavigationServiceImpl implements NavigationService {
         if (!list.isEmpty()) {
             System.out.println("Path found:");
             for (Point point : list) {
-                System.out.println("Point: (" + point.x + ", " + point.y + ", "+ point.floor + ", "+ point.isElevator+ ")");
+                System.out.println("Point: (" +point.id+","+ point.x + ", " + point.y + ", "+ point.floor + ", "+ point.isElevator+ ")");
             }
         } else {
             System.out.println("No path found.");

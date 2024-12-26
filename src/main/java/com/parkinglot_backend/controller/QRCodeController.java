@@ -29,7 +29,7 @@ public class QRCodeController {
 
     //这里前端使用POST但是后端使用GET,原因不知
     @PostMapping("/submit")
-    public Result<?> submitQRCode(@RequestBody QRCodeRequest qrCodeRequest, @RequestHeader("token") String token, HttpServletRequest httpServletRequest) {
+    public Result<?> submitQRCode(@RequestBody QRCodeRequest qrCodeRequest, @RequestHeader("token") String token) {
         System.out.println("接收到的请求方法: POST");
         System.out.println("接收到的二维码内容: " + qrCodeRequest.getQrCodeContent());
         System.out.println("接收到的 Authorization: " + token);

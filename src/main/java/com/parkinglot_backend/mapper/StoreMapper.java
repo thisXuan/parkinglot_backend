@@ -30,6 +30,13 @@ public interface StoreMapper extends BaseMapper<Store> {
 
     @Select("SELECT point_id FROM Store_Point WHERE store_id=#{storeId}")
     Integer findPointIdByStoreId(Integer storeId);
+
+    @Select("SELECT * FROM Store " +
+            "WHERE (#{category} = '全部' OR servicecategory = #{category}) " +
+            "AND (#{floor} = '全部楼层' OR floornumber = #{floor})")
+    List<Store> getStoresByFilters(@Param("category") String category,
+                                   @Param("floor") String floor);
+
 }
 
 

@@ -68,6 +68,26 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
         return Result.ok(allNames);
     }
 
+    @Override
+    public Result getStoresByFilters(String category, String floor, int page, int size) {
+        // 对 floor 参数进行转换
+        if ("B1".equals(floor)) {
+            floor = "-1";
+        } else if ("M".equals(floor)) {
+            floor = "0";
+        }
+
+        // 自动处理分页，size固定为10
+        PageHelper.startPage(page, 10);
+        System.out.println(floor);
+
+        // 调用 StoreMapper 获取筛选后的商铺列表
+        List<Store> stores = storeMapper.getStoresByFilters(category, floor);
+
+        // 返回结果
+        return Result.ok(stores);
+    }
+
 
 }
 

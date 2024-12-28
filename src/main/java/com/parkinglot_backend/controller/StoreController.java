@@ -44,4 +44,15 @@ public class StoreController {
         return storeService.getStoreName();
     }
 
+    // 获取符合条件的商铺列表
+    @GetMapping("/get_stores")
+    public Result getStores(@RequestParam String category,
+                            @RequestParam String floor,
+                            @RequestParam int page,
+                            @RequestParam int size) {
+        //System.out.println(floor);
+        // 调用服务层获取商铺数据
+        return storeService.getStoresByFilters(category, floor, page, size);
+    }
+
 }

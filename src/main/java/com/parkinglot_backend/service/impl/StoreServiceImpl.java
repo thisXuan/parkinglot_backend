@@ -1,5 +1,6 @@
 package com.parkinglot_backend.service.impl;
 
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -86,6 +87,15 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
 
         // 返回结果
         return Result.ok(stores);
+    }
+
+    @Override
+    public Result getStoreInfoById(int id) {
+        Store store = storeMapper.selectById(id);
+        if(store == null){
+            return Result.fail("该店铺不存在！");
+        }
+        return Result.ok(store);
     }
 
 

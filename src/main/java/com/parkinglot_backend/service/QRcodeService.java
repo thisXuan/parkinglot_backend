@@ -9,4 +9,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface QRcodeService {
     // 提交二维码方法，接受请求体和Authorization请求头
     Result submitQRCode(QRCodeRequest qrCodeRequest, String token);
+
+    Result getQRCodeContentByUserId(String token);
 }

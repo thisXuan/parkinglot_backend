@@ -17,4 +17,7 @@ public interface QRCodeScansMapper extends BaseMapper<QRCodeScans> {
 
     @Select("SELECT COUNT(*) FROM QRCodeScans WHERE user_id = #{userId}")
     int countByUserId(@Param("userId") Integer userId);
+
+    @Select("SELECT qr_content FROM QRCodeScans WHERE user_id = #{userId}")
+    String selectQRCodeByUserId(@Param("userId") Integer userId);
 }

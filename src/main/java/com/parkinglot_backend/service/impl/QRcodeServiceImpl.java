@@ -60,4 +60,25 @@ public class QRcodeServiceImpl implements QRcodeService {
             return Result.fail("Invalid token");
         }
     }
+
+    public Result getQRCodeContentByUserId(String token) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+
+        if (userId == null) {
+            return Result.fail("用户ID不能为空");
+        }
+
+        try {
+            String qrContent = qrCodeScansMapper.selectQRCodeByUserId(userId);
+            if (qrContent == null) {
+                return Result.fail("未找到对应的二维码内容，用户ID: " + userId);
+            }
+            System.out.println(qrContent);
+            return Result.ok(qrContent);
+        } catch (Exception e) {
+            return Result.fail("获取二维码内容失败: " + e.getMessage());
+        }
+    }
+
 }

@@ -36,6 +36,13 @@ public class QRCodeController {
         return qrCodeService.submitQRCode(qrCodeRequest, token);
     }
 
+    @GetMapping("/getQR")
+    public Result getQRCodeContentByUserId(@RequestHeader("token") String token){
+        System.out.println("查询二维码内容");
+        return qrCodeService.getQRCodeContentByUserId(token);
+    }
+
+
 //    @GetMapping("/submit")
 //    public Result<?> handleGet() {
 //        System.out.println("接收到的请求方法: GET");

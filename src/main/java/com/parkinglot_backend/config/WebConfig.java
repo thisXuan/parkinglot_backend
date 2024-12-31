@@ -14,7 +14,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/user/**",
                         "/store/**",
-                        "/navigation/**"
+                        "/navigation/**",
+                        "/voucher/getVoucherByShopId"
                 ).excludePathPatterns(
                         "/swagger-ui/**",
                         "/swagger-resources/**",

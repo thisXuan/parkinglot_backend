@@ -39,13 +39,11 @@ public class NavigationServiceImpl implements NavigationService {
 
     @Resource
     private ParkingConnectMapper parkingConnectMapper;
-    // Map<Integer, Point> pointMap = new HashMap<>();
 
-//
-//    public NavigationServiceImpl(PointMapper pointsMapper, ConnectionMapper connectionMapper) {
-//        this.pointsMapper = pointsMapper;
-//        this.connectionMapper = connectionMapper;
-//    }
+    @Resource
+    private StorePointMapper storePointMapper;
+
+    private List<List<Point>> connectedPoints;
 
     @Override
     public Result getPath(NavigationPoint navigationPoint) {
@@ -153,62 +151,108 @@ public class NavigationServiceImpl implements NavigationService {
                 .map(p -> parkingLotpointMap.get(p.getId()))
                 .collect(Collectors.toList());
 
-//        // 打印所有点信息
-//        System.out.println("Points from DB:");
-//        points.forEach(point -> System.out.println("Point: (" + point.x + ", " + point.y + ")"));
-
-
         List<Connection> connections = connectionMapper.selectAllConnections();
         List<Connection> parkingConnects = parkingConnectMapper.selectAllConnections();
-//        // 打印所有连接信息
-//        System.out.println("\nConnections from DB:");
-//        connections.forEach(connection -> System.out.println("Connection: " + connection.getPointId1() + " -> " + connection.getPointId2()));
+
         // 打印当前时间1
         long startTime1 = System.currentTimeMillis();
         Graph graph = buildGraph(pointMap, points, connections);
         Graph graph1 = buildGraph(parkingLotpointMap , parkingPoints , parkingConnects);
         Graph mergeGraph = mergeGraphs(graph,graph1);
 
-        //当前时间1
-        long startTime = System.currentTimeMillis();
-        long timeDifference1 = startTime - startTime1;
-        System.out.println("时间差1: " + timeDifference1 + "毫秒");
+        // 调用 aStar 方法，返回 AStarResult 对象
+        AStarResult result = aStar(mergeGraph, startPoint, endPoint);
 
-
-
-        List<Point> pathCoordinates = aStar(mergeGraph, startPoint, endPoint);
-
-        // 打印当前时间2
-        long endTime = System.currentTimeMillis();
-        System.out.println("当前时间2: " + endTime);
-        // 计算时间差
-        long timeDifference = endTime - startTime;
-        System.out.println("时间差: " + timeDifference + "毫秒");
-
-        if (pathCoordinates == null || pathCoordinates.isEmpty()) {
+// 如果没有找到路径，返回失败结果
+        if (result == null || result.getPath().isEmpty()) {
             return Result.fail("未找到路径");
         }
 
-        // 处理一下pathCoordinates，只有起点和终点所在楼层的路径
-        List<Point> list = new ArrayList<>();
+// 获取路径和连接点信息
+        List<Point> pathCoordinates = result.getPath();
+        connectedPoints = result.getConnectedPoints();
 
-        for(Point point : pathCoordinates) {
-            if(point.getFloor().equals(startPoint.getFloor()) || point.getFloor().equals(endPoint.getFloor())) {
-                list.add(point);
+// 处理路径，仅保留起点和终点所在楼层的路径
+        List<Point> filteredPath = new ArrayList<>();
+        for (Point point : pathCoordinates) {
+            if (point.getFloor().equals(startPoint.getFloor()) || point.getFloor().equals(endPoint.getFloor())) {
+                filteredPath.add(point);
             }
         }
 
-        // 打印路径
-        if (!list.isEmpty()) {
-            System.out.println("Path found:");
-            for (Point point : list) {
-                System.out.println("Point: (" +point.id+","+ point.x + ", " + point.y + ", "+ point.floor + ", "+ point.isElevator+ ")");
-            }
-        } else {
-            System.out.println("No path found.");
+//// 打印路径
+//        if (!filteredPath.isEmpty()) {
+//            System.out.println("Path found:");
+//            for (Point point : filteredPath) {
+//                System.out.println("Point: (" + point.getId() + ", " + point.getX() + ", " + point.getY() + ", " + point.getFloor() + ", " + point.isElevator() + ")");
+//            }
+//        } else {
+//            System.out.println("No path found.");
+//        }
+
+
+        getStoreNames();
+// 返回最终结果
+        return Result.ok(filteredPath);
+
+    }
+
+    public Result getStoreNames() {
+        // 获取 Store_Point 表中的所有 store_id 和 point_id 的映射
+        List<StorePoint> storePointList = storePointMapper.getStorePointList();
+
+        // 创建一个 map 来存储 point_id -> store_id 映射
+        Map<Integer, Integer> pointToStoreMap = new HashMap<>();
+        for (StorePoint storePoint : storePointList) {
+            pointToStoreMap.put(storePoint.getPointId(), storePoint.getStoreId());
         }
 
-        return Result.ok(list);
+        // 用于存储处理后的 connectedPoints
+        List<List<Point>> processedConnectedPoints = new ArrayList<>();
+        // 用于存储 point_id 对应的 store_id 列表
+        List<Integer> storeIds = new ArrayList<>();
+
+        // 对每个 connectedPoints 进行处理
+        for (List<Point> pointList : connectedPoints) {
+            List<Point> filteredPoints = new ArrayList<>();
+
+            // 筛选出在 Store_Point 表中存在的 point_id
+            for (Point point : pointList) {
+                if (pointToStoreMap.containsKey(point.getId())) {
+                    // 如果存在对应的 store_id，则保留该 point
+                    filteredPoints.add(point);
+                    storeIds.add(pointToStoreMap.get(point.getId())); // 将对应的 store_id 存入 storeIds
+                }
+            }
+
+            // 将筛选后的 point 列表加入到结果中
+            if (!filteredPoints.isEmpty()) {
+                processedConnectedPoints.add(filteredPoints);
+            }
+        }
+
+        // 根据 storeIds 获取商铺名列表
+        List<String> storeNames = new ArrayList<>();
+        for (Integer storeId : storeIds) {
+            String storeName = storeMapper.getStoreNameById(storeId);
+            if (storeName != null) {
+                storeNames.add(storeName);
+                System.out.println(storeName);
+            }
+        }
+        // 输出 processedConnectedPoints 内容，查看处理后的数据
+//        for (int i = 0; i < processedConnectedPoints.size(); i++) {
+//            List<Point> pointList = processedConnectedPoints.get(i);
+//            System.out.println("Processed Points List " + (i + 1) + ": ");
+//            for (Point point : pointList) {
+//                //ids.add(point.getId());
+//                System.out.println("Point ID: " + point.getId() + ", Coordinates: (" + point.getX() + ", " + point.getY() + ")");
+//
+//            }
+//        }
+
+        return Result.ok(storeNames);
+
     }
 
     public Graph mergeGraphs(Graph graph, Graph graph1) {
@@ -287,21 +331,17 @@ public class NavigationServiceImpl implements NavigationService {
 
                 // 判断是否可以建立连接
                 if (floor1.equals(floor2) || (isElevator1 && isElevator2)) {
-                   // System.out.println("Point: (" + point1.x + ", " + point1.y + point1.floor + point1.isElevator+ ")");
-                   // System.out.println("Point: (" + point2.x + ", " + point2.y + point2.floor + point2.isElevator+ ")");
                     // 如果两个点在同一层，或者它们都与电梯连接，则建立边
                     //graph.addEdge(point1, point1);
                     graph.addEdge(point1, point2);
                 }
             }
         }
-        //System.out.println("Graph edges:");
-        //graph.printEdges();
 
         return graph;
     }
     // A*算法实现，返回从起点到终点的路径
-    private List<Point> aStar(Graph graph, Point start, Point end) {
+    private AStarResult aStar(Graph graph, Point start, Point end) {
         PriorityQueue<Node> openList = new PriorityQueue<>();
         Map<Point, Node> nodeMap = new HashMap<>();
         Map<Point, Boolean> closedList = new HashMap<>();
@@ -312,17 +352,29 @@ public class NavigationServiceImpl implements NavigationService {
         openList.add(startNode);
         nodeMap.put(start, startNode);
 
+        // 用于存储路径和每个点的连接点列表
+        List<Point> path = new ArrayList<>();
+        List<List<Point>> connectedPoints = new ArrayList<>();
 
         while (!openList.isEmpty()) {
             Node current = openList.poll();
             closedList.put(current.point, true);
+
             if (current.point.equals(end)) {
-                return constructPath(current);
+                // 找到路径，构建结果
+                path = constructPath(current);
+
+                // 收集路径中每个点的相连点，使用 Set 避免重复连接点
+                for (Point point : path) {
+                    Set<Point> uniqueNeighbors = new HashSet<>(graph.getNeighbors(point)); // 使用 Set 去重
+                    connectedPoints.add(new ArrayList<>(uniqueNeighbors)); // 转换回 List 添加到 connectedPoints
+                }
+
+                return new AStarResult(path, connectedPoints);
             }
 
             List<Point> neighbors = graph.getNeighbors(current.point);
             for (Point neighbor : neighbors) {
-
                 if (closedList.containsKey(neighbor)) continue;
 
                 double tentativeG = current.g + current.point.distance(neighbor);
@@ -346,6 +398,9 @@ public class NavigationServiceImpl implements NavigationService {
     }
 
 
+
+
+
     private static double heuristic(Point a, Point b) {
         return a.distance(b);
     }
@@ -359,6 +414,31 @@ public class NavigationServiceImpl implements NavigationService {
         }
         return path;
     }
+
+
+
+    public class AStarResult {
+        private List<Point> path; // 路径
+        private List<List<Point>> connectedPoints; // 路径中每个点的连接点列表
+
+        // 构造函数
+        public AStarResult(List<Point> path, List<List<Point>> connectedPoints) {
+            this.path = path;
+            this.connectedPoints = connectedPoints;
+        }
+
+        // 获取路径
+        public List<Point> getPath() {
+            return path;
+        }
+
+        // 获取连接点列表
+        public List<List<Point>> getConnectedPoints() {
+            return connectedPoints;
+        }
+    }
+
+
 
 
 

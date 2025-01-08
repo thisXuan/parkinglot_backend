@@ -29,4 +29,10 @@ public class NavigationController {
     public Result getPath(@RequestBody NavigationPoint navigationPoint) {
         return navigationService.getPath(navigationPoint);
     }
+
+//    @Operation(summary = "获取路径上的店铺名")
+//    @GetMapping("/getPath")
+//    public Result getStoreNames() {
+//        return navigationService.getStoreNames();
+//    }
 }

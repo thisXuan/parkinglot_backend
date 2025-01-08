@@ -80,7 +80,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
 
         // 自动处理分页，size固定为10
         PageHelper.startPage(page, 10);
-        System.out.println(floor);
+        //System.out.println(floor);
 
         // 调用 StoreMapper 获取筛选后的商铺列表
         List<Store> stores = storeMapper.getStoresByFilters(category, floor);

@@ -37,6 +37,9 @@ public interface StoreMapper extends BaseMapper<Store> {
     List<Store> getStoresByFilters(@Param("category") String category,
                                    @Param("floor") String floor);
 
+
+    @Select("SELECT storename FROM Store WHERE id = #{id}")
+    String getStoreNameById(@Param("id") Integer id);
 }
 
 

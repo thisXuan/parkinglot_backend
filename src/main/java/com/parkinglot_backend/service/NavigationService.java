@@ -5,4 +5,6 @@ import com.parkinglot_backend.util.Result;
 public interface NavigationService {
 
     Result getPath(NavigationPoint navigationPoint);
+
+    Result getStoreNames();
 }

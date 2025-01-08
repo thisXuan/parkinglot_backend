@@ -1,5 +1,7 @@
 package com.parkinglot_backend.dataStructure;
 
+import lombok.Data;
+
 import java.util.Objects;
 
 /**
@@ -7,6 +9,7 @@ import java.util.Objects;
  * @CreateTime: 2024-11-07
  * @Description:
  */
+@Data
 public class Point {
     public int id;
     public double x;

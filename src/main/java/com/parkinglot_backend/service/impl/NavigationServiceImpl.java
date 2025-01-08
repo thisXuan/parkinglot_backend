@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.assist.ISqlRunner;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.parkinglot_backend.dataStructure.Node;
 import com.parkinglot_backend.dto.NavigationPoint;
+import com.parkinglot_backend.dto.ResultPointDTO;
 import com.parkinglot_backend.entity.*;
 import com.parkinglot_backend.mapper.*;
 import com.parkinglot_backend.service.NavigationService;
@@ -189,15 +190,18 @@ public class NavigationServiceImpl implements NavigationService {
 //        } else {
 //            System.out.println("No path found.");
 //        }
+        List<String> storeNames = getStoreNames(startPoint.getFloor());
 
+        ResultPointDTO resultPointDTO = new ResultPointDTO();
+        resultPointDTO.setFilteredPath(filteredPath);
+        resultPointDTO.setStoreNames(storeNames);
 
-        getStoreNames();
 // 返回最终结果
-        return Result.ok(filteredPath);
+        return Result.ok(resultPointDTO);
 
     }
 
-    public Result getStoreNames() {
+    public List<String> getStoreNames(String startFloor) {
         // 获取 Store_Point 表中的所有 store_id 和 point_id 的映射
         List<StorePoint> storePointList = storePointMapper.getStorePointList();
 
@@ -212,6 +216,8 @@ public class NavigationServiceImpl implements NavigationService {
         // 用于存储 point_id 对应的 store_id 列表
         List<Integer> storeIds = new ArrayList<>();
 
+        boolean flagFloor = true; //换楼层
+
         // 对每个 connectedPoints 进行处理
         for (List<Point> pointList : connectedPoints) {
             List<Point> filteredPoints = new ArrayList<>();
@@ -219,6 +225,14 @@ public class NavigationServiceImpl implements NavigationService {
             // 筛选出在 Store_Point 表中存在的 point_id
             for (Point point : pointList) {
                 if (pointToStoreMap.containsKey(point.getId())) {
+                    if(flagFloor){
+                        if(!startFloor.equals(point.getFloor())){
+                            System.out.println("换楼层");
+                            flagFloor = false;
+                            storeIds.add(5000);
+                        }
+                    }
+
                     // 如果存在对应的 store_id，则保留该 point
                     filteredPoints.add(point);
                     storeIds.add(pointToStoreMap.get(point.getId())); // 将对应的 store_id 存入 storeIds
@@ -234,7 +248,13 @@ public class NavigationServiceImpl implements NavigationService {
         // 根据 storeIds 获取商铺名列表
         List<String> storeNames = new ArrayList<>();
         for (Integer storeId : storeIds) {
+            if(storeId == 5000){
+                storeNames.add("乘坐电梯");
+                System.out.println("乘坐电梯");
+                continue;
+            }
             String storeName = storeMapper.getStoreNameById(storeId);
+
             if (storeName != null) {
                 storeNames.add(storeName);
                 System.out.println(storeName);
@@ -251,7 +271,7 @@ public class NavigationServiceImpl implements NavigationService {
 //            }
 //        }
 
-        return Result.ok(storeNames);
+        return storeNames;
 
     }
 

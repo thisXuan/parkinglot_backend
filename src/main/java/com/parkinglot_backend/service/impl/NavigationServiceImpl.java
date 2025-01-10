@@ -247,6 +247,7 @@ public class NavigationServiceImpl implements NavigationService {
 
         // 根据 storeIds 获取商铺名列表
         List<String> storeNames = new ArrayList<>();
+        Set<String> storeNameSet = new HashSet<>(); // 用于记录已添加的商铺名
         for (Integer storeId : storeIds) {
             if(storeId == 5000){
                 storeNames.add("乘坐电梯");
@@ -255,8 +256,9 @@ public class NavigationServiceImpl implements NavigationService {
             }
             String storeName = storeMapper.getStoreNameById(storeId);
 
-            if (storeName != null) {
+            if (storeName != null && !storeNameSet.contains(storeName)) {
                 storeNames.add(storeName);
+                storeNameSet.add(storeName); // 将商铺名加入到集合中，防止重复添加
                 System.out.println(storeName);
             }
         }

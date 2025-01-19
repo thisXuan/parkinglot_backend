@@ -5,23 +5,24 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.util.Date;
 import lombok.Data;
 
 /**
- * @TableName user
+ * @TableName sign_record
  */
-@TableName(value ="user")
+@TableName(value ="sign_record")
 @Data
-public class User implements Serializable {
+public class sign_record implements Serializable {
     private Integer id;
 
-    private String name;
+    private Integer userId;
 
-    private String password;
+    private Date dateMonth;
 
-    private String phone;
+    private Integer mask;
 
-    private String point;
+    private Integer continueSignMonth;
 
     private static final long serialVersionUID = 1L;
 }

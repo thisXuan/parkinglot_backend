@@ -15,7 +15,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/user/**",
                         "/store/**",
                         "/navigation/**",
-                        "/voucher/getVoucherByShopId"
+                        "/voucher/getVoucherByShopId",
+                        "/shopLocation/**"
                 ).excludePathPatterns(
                         "/swagger-ui/**",
                         "/swagger-resources/**",

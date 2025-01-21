@@ -1,6 +1,7 @@
 package com.parkinglot_backend.service.impl;
 
 import com.parkinglot_backend.dto.StoreDTO;
+import com.parkinglot_backend.mapper.ShopLocationMapper;
 import com.parkinglot_backend.mapper.StorePointMapper;
 import com.parkinglot_backend.service.ShopOnMapService;
 import com.parkinglot_backend.util.Result;
@@ -22,6 +23,9 @@ public class ShopOnMapServiceImpl implements ShopOnMapService {
     @Resource
     private StorePointMapper storePointMapper;
 
+    @Resource
+    private ShopLocationMapper shopLocationMapper;
+
     // 定义一个全局变量缓存商铺信息
     private List<StoreDTO> cachedStoreDetails;
 
@@ -29,11 +33,13 @@ public class ShopOnMapServiceImpl implements ShopOnMapService {
     public Result getAllShopLocations() {
         // 如果缓存为空，从数据库中加载数据
         if (cachedStoreDetails == null || cachedStoreDetails.isEmpty()) {
-            cachedStoreDetails = storePointMapper.selectAllStoreDetails();
+            cachedStoreDetails = shopLocationMapper.selectAllShopLocations();
         }
 
         // 判断是否获取到数据并封装返回结果
         if (cachedStoreDetails != null && !cachedStoreDetails.isEmpty()) {
+            // 打印缓存的商铺信息
+            System.out.println("Cached Store Details: " + cachedStoreDetails);
             return Result.ok(cachedStoreDetails); // 封装成功结果
         } else {
             return Result.fail("没有找到商铺"); // 如果没有找到数据，返回错误信息
@@ -44,8 +50,10 @@ public class ShopOnMapServiceImpl implements ShopOnMapService {
     public Result getShopLocationsByFloor(String floor) {
         // 确保缓存已加载
         if (cachedStoreDetails == null || cachedStoreDetails.isEmpty()) {
-            cachedStoreDetails = storePointMapper.selectAllStoreDetails();
+            cachedStoreDetails = shopLocationMapper.selectAllShopLocations();
         }
+        // 打印缓存的商铺信息
+        System.out.println("Cached Store Details: " + cachedStoreDetails);
         // 筛选符合楼层条件的商铺
         List<StoreDTO> filteredStoreDetails = cachedStoreDetails.stream()
                 .filter(store -> floor.equals(store.getFloorNumber()))

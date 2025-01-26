@@ -35,5 +35,8 @@ public class ShopLocation implements Serializable {
     @TableField("floorNumber")
     private String floorNumber;
 
+    @TableField("scale")
+    private double scale;
+
     // 其他字段...
 }

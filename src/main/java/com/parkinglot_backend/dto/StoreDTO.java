@@ -8,4 +8,5 @@ public class StoreDTO {
     private double x;
     private double y;
     private String floorNumber;
+    private double scale;
 }

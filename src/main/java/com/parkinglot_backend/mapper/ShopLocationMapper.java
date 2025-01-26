@@ -13,7 +13,8 @@ public interface ShopLocationMapper extends BaseMapper<ShopLocation> {
     @Select("Select sl.name AS name, " +
             "       sl.x AS x, " +
             "       sl.y AS y, " +
-            "       sl.floorNumber AS floorNumber " +
+            "       sl.floorNumber AS floorNumber, " +
+            "       sl.scale AS scale "+
             "FROM shopLocation sl WHERE ABS(sl.x) > 1E-10 AND ABS(sl.y) > 1E-10")
     List<StoreDTO> selectAllShopLocations();
 

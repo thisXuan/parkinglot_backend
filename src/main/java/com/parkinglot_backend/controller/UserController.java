@@ -62,9 +62,15 @@ public class UserController {
     }
 
     @Operation(summary = "累计签到天数")
-    @PostMapping("/getSignInDays")
+    @GetMapping("/getSignInDays")
     public Result getSignInDays(@RequestHeader("token")String token) {
         return signRecordService.getSignInDaysByUserId(token);
+    }
+
+    @Operation(summary = "获取成长值")
+    @GetMapping("/getPoint")
+    public Result getPoint(@RequestHeader("token")String token) {
+        return signRecordService.getPoint(token);
     }
 
 }

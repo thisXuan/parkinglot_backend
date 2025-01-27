@@ -2,6 +2,7 @@ package com.parkinglot_backend.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.parkinglot_backend.entity.sign_record;
+import com.parkinglot_backend.mapper.UserMapper;
 import com.parkinglot_backend.service.sign_recordService;
 import com.parkinglot_backend.mapper.sign_recordMapper;
 import com.parkinglot_backend.util.DateUtils;
@@ -12,9 +13,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
 * @author minxuan
@@ -22,11 +21,15 @@ import java.util.List;
 * @createDate 2025-01-19 20:36:12
 */
 @Service
-public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_record>
+public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_record >
     implements sign_recordService{
 
     @Resource
     private sign_recordMapper signRecordMapper;
+
+    @Resource
+    private UserMapper userMapper;
+
     @Override
     public Result sign(String token) {
         // 解析JWT token获取用户ID
@@ -70,11 +73,15 @@ public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_
         signRecord.setMask(mask);
         signRecord.setContinueSignMonth(continueSignMonth);
 
+        boolean set_Point = setPoint(token);
         int updatedRows = signRecordMapper.updateSignRecordByUserIdAndDateMonth(userId, dateMonth, mask, continueSignMonth);
 
         if (updatedRows <= 0) {
             signRecordMapper.insert(signRecord);
         }
+
+
+
         return Result.ok("签到成功");
     }
 
@@ -94,6 +101,67 @@ public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_
 
     @Override
     public Result getSignInDaysByUserId(String token) {
+        List<Integer> signInDays = signInDaysHelper(token);
+        if(signInDays==null){
+            return Result.fail("未获取到列表");
+        }
+        return Result.ok(signInDays);
+    }
+
+    @Override
+    public boolean setPoint(String token){
+
+        System.out.println("进入setPoint");
+        List<Integer> signInDays = signInDaysHelper(token);
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        Integer currentPoint = userMapper.getUserPointByUserId(userId); // 获取当前用户的成长值
+
+        Integer lastSignInDay = Collections.max(signInDays); // 获取本月最后一次签到的日期
+        System.out.println("lastSignInDay"+lastSignInDay);
+        // 获取当前日期
+        Calendar calendar = Calendar.getInstance();
+        int today = calendar.get(Calendar.DAY_OF_MONTH);
+        System.out.println("today"+today);
+
+
+        int additionalPoints = 0;
+        if (today - lastSignInDay == 1) {
+            // 如果今天日期比本月最后一次签到日期大一天，则增加10点
+            additionalPoints += 10;
+        } else if(today - lastSignInDay == 0){
+            //今天已经重置过
+            additionalPoints += 0;
+        }
+        else {
+            // 否则增加5点
+            additionalPoints += 5;
+        }
+
+        int newPoint = currentPoint + additionalPoints; // 计算新的成长值
+        userMapper.updatePointByUserId(userId, newPoint); // 更新用户的成长值
+        
+        return true;
+    }
+
+    @Override
+    public Result getPoint(String token) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+
+        int point = userMapper.getUserPointByUserId(userId);
+        return Result.ok(point);
+    }
+
+
+//    @Override
+//    public sign_record getSignRecord(Integer userId, Date dateMonth) {
+//        return signRecordMapper.selectOne(new QueryWrapper<sign_record>()
+//                .eq("user_id", userId)
+//                .eq("date_month", dateMonth));
+//    }
+
+    public List<Integer> signInDaysHelper(String token){
         // 解析JWT token获取用户ID
         Claims claims = JwtUtils.parseJWT(token);
         Integer userId = claims.get("UserId", Integer.class);
@@ -113,9 +181,9 @@ public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_
 
         // 获取用户当月累计签到天数
         Long mask = signRecordMapper.getSignInDaysByUserId(userId, dateMonth);
-        // 如果mask为null，返回空列表
+
         if (mask == null) {
-            return Result.fail("从未签到");
+            return null;
         }
         List<Integer> signInDays = new ArrayList<>();
         // 将mask转换为二进制字符串
@@ -126,16 +194,8 @@ public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_
                 signInDays.add(i ); // day_of_month从1开始
             }
         }
-
-        return Result.ok(signInDays);
+        return signInDays;
     }
-
-//    @Override
-//    public sign_record getSignRecord(Integer userId, Date dateMonth) {
-//        return signRecordMapper.selectOne(new QueryWrapper<sign_record>()
-//                .eq("user_id", userId)
-//                .eq("date_month", dateMonth));
-//    }
 
 }
 

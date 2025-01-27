@@ -20,4 +20,9 @@ public interface sign_recordService extends IService<sign_record> {
     sign_record getSignRecord(Integer userId, String dateMonth);
 
     Result getSignInDaysByUserId(String token);
+
+    boolean setPoint(String token);
+
+    Result getPoint(String token);
+
 }

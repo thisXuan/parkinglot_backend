@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @Operation(summary = "累计签到天数")
-    @PostMapping("/getSignInDays")
+    @GetMapping("/getSignInDays")
     public Result getSignInDays(@RequestHeader("token")String token) {
         return signRecordService.getSignInDaysByUserId(token);
     }

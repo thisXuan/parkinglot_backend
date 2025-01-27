@@ -113,10 +113,10 @@ public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_
 
         // 获取用户当月累计签到天数
         Long mask = signRecordMapper.getSignInDaysByUserId(userId, dateMonth);
-        // 如果mask为null，返回空列表
-        if (mask == null) {
-            return Result.fail("从未签到");
-        }
+//        // 如果mask为null，返回空列表
+//        if (mask == null) {
+//            return Result.fail("从未签到");
+//        }
         List<Integer> signInDays = new ArrayList<>();
         // 将mask转换为二进制字符串
         String binaryMask = Long.toBinaryString(mask);

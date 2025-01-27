@@ -4,6 +4,7 @@ import com.parkinglot_backend.dto.ForgetPasswordDTO;
 import com.parkinglot_backend.dto.LoginFormDTO;
 import com.parkinglot_backend.dto.RegisterDTO;
 import com.parkinglot_backend.service.UserService;
+import com.parkinglot_backend.service.sign_recordService;
 import com.parkinglot_backend.util.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +21,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private sign_recordService signRecordService;
 
     @Operation(summary = "用户登录")
     @PostMapping("/login")
@@ -51,5 +55,16 @@ public class UserController {
         return userService.resetPassword(forgetPasswordDTO);
     }
 
+    @Operation(summary = "用户签到")
+    @PostMapping("/signIn")
+    public Result sign(@RequestHeader("token")String token) {
+        return signRecordService.sign(token);
+    }
+
+    @Operation(summary = "累计签到天数")
+    @PostMapping("/getSignInDays")
+    public Result getSignInDays(@RequestHeader("token")String token) {
+        return signRecordService.getSignInDaysByUserId(token);
+    }
 
 }

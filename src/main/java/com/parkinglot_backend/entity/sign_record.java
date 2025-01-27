@@ -18,7 +18,7 @@ public class sign_record implements Serializable {
 
     private Integer userId;
 
-    private Date dateMonth;
+    private String dateMonth;
 
     private Integer mask;
 

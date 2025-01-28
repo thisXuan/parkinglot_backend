@@ -62,12 +62,9 @@ public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_
         int mask = signRecord.getMask();
         mask |= (1 << dayOfMonth);
         int continueSignMonth = signRecord.getContinueSignMonth();
-        if (dayOfMonth == 1 || (mask & (1 << (dayOfMonth - 1))) == 0) {
-            continueSignMonth = 1;
-        } else {
-            continueSignMonth += 1;
-        }
-        //System.out.println(dayOfMonth);
+        int continueDaysInMonth = setContinueSign(token);
+        continueSignMonth = continueDaysInMonth;
+
 
         //更新对象属性
         signRecord.setMask(mask);
@@ -79,8 +76,6 @@ public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_
         if (updatedRows <= 0) {
             signRecordMapper.insert(signRecord);
         }
-
-
 
         return Result.ok("签到成功");
     }
@@ -111,18 +106,15 @@ public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_
     @Override
     public boolean setPoint(String token){
 
-        System.out.println("进入setPoint");
         List<Integer> signInDays = signInDaysHelper(token);
         Claims claims = JwtUtils.parseJWT(token);
         Integer userId = claims.get("UserId", Integer.class);
         Integer currentPoint = userMapper.getUserPointByUserId(userId); // 获取当前用户的成长值
 
         Integer lastSignInDay = Collections.max(signInDays); // 获取本月最后一次签到的日期
-        System.out.println("lastSignInDay"+lastSignInDay);
         // 获取当前日期
         Calendar calendar = Calendar.getInstance();
         int today = calendar.get(Calendar.DAY_OF_MONTH);
-        System.out.println("today"+today);
 
 
         int additionalPoints = 0;
@@ -151,6 +143,38 @@ public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_
 
         int point = userMapper.getUserPointByUserId(userId);
         return Result.ok(point);
+    }
+
+    @Override
+    public int setContinueSign(String token) {
+        List<Integer> signInDays = signInDaysHelper(token);
+        if (signInDays == null || signInDays.isEmpty()) {
+            return 0;
+        }
+
+        int maxConsecutive = 1;
+        int currentConsecutive = 1;
+        int previousNumber = signInDays.get(0);
+
+        for (int i = 1; i < signInDays.size(); i++) {
+            int currentNumber = signInDays.get(i);
+
+            if (currentNumber == previousNumber + 1) {
+                // 当前数字与前一个数字连续
+                currentConsecutive++;
+            } else {
+                // 当前数字与前一个数字不连续
+                maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+                currentConsecutive = 1;
+            }
+
+            previousNumber = currentNumber;
+        }
+
+        // 最后一个连续序列可能没有被更新到 maxConsecutive 中
+        maxConsecutive = Math.max(maxConsecutive, currentConsecutive);
+
+        return maxConsecutive;
     }
 
 

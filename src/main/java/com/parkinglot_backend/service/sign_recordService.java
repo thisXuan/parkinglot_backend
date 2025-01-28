@@ -25,4 +25,6 @@ public interface sign_recordService extends IService<sign_record> {
 
     Result getPoint(String token);
 
+    int setContinueSign(String token);
+
 }

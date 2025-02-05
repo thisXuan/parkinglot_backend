@@ -111,6 +111,11 @@ public class sign_recordServiceImpl extends ServiceImpl<sign_recordMapper, sign_
         Integer userId = claims.get("UserId", Integer.class);
         Integer currentPoint = userMapper.getUserPointByUserId(userId); // 获取当前用户的成长值
 
+        if(signInDays == null){
+            userMapper.updatePointByUserId(userId, 5); // 更新用户的成长值
+            return true;
+        }
+
         Integer lastSignInDay = Collections.max(signInDays); // 获取本月最后一次签到的日期
         // 获取当前日期
         Calendar calendar = Calendar.getInstance();

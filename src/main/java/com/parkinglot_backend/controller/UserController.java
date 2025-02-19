@@ -3,6 +3,7 @@ package com.parkinglot_backend.controller;
 import com.parkinglot_backend.dto.ForgetPasswordDTO;
 import com.parkinglot_backend.dto.LoginFormDTO;
 import com.parkinglot_backend.dto.RegisterDTO;
+import com.parkinglot_backend.service.CouponService;
 import com.parkinglot_backend.service.UserService;
 import com.parkinglot_backend.service.sign_recordService;
 import com.parkinglot_backend.util.Result;
@@ -24,6 +25,9 @@ public class UserController {
 
     @Autowired
     private sign_recordService signRecordService;
+
+    @Autowired
+    private CouponService couponService;
 
     @Operation(summary = "用户登录")
     @PostMapping("/login")
@@ -71,6 +75,18 @@ public class UserController {
     @GetMapping("/getPoint")
     public Result getPoint(@RequestHeader("token")String token) {
         return signRecordService.getPoint(token);
+    }
+
+    @Operation(summary = "查看优惠券成长值")
+    @GetMapping("/getCoupon")
+    public Result getCoupon(@RequestParam(value = "type", required = false) String type){
+        return couponService.getCoupon(type);
+    }
+
+    @Operation(summary = "查看优惠券成长值")
+    @PostMapping("/exchangeCoupon")
+    public Result exchangeCoupon(@RequestHeader("token")String token,@RequestParam("id")Integer id){
+        return couponService.exchangeCoupon(token,id);
     }
 
 }

@@ -52,6 +52,8 @@ public class CouponServiceImpl implements CouponService {
             return Result.fail("成长值不足");
         }
         userMapper.updatePointByUserId(userId,currentPoint-payPoint);
+        couponMapper.UpdateCountById(id);
+
         return Result.ok(true);
     }
 }

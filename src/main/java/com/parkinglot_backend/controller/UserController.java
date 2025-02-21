@@ -83,7 +83,7 @@ public class UserController {
         return couponService.getCoupon(type);
     }
 
-    @Operation(summary = "查看优惠券成长值")
+    @Operation(summary = "兑换优惠券")
     @PostMapping("/exchangeCoupon")
     public Result exchangeCoupon(@RequestHeader("token")String token,@RequestParam("id")Integer id){
         return couponService.exchangeCoupon(token,id);

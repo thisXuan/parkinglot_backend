@@ -37,4 +37,10 @@ public class Coupon implements Serializable {
 
     @TableField("status")
     private Integer status;
+
+    @TableField("image")
+    private String image;
+
+    @TableField("sale_count")
+    private int saleCount;
 }

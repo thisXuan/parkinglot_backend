@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.parkinglot_backend.entity.Coupon;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -16,5 +17,8 @@ public interface CouponMapper extends BaseMapper<Coupon> {
 
     @Select("SELECT pay_point FROM Coupon WHERE id = #{id}")
     Integer findPayPointById(@Param("id") Integer id);
+
+    @Update("UPDATE Coupon SET sale_count = sale_count+1 WHERE id = #{id}")
+    void UpdateCountById(@Param("id") Integer id);
 
 }

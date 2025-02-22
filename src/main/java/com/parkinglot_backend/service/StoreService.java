@@ -23,4 +23,10 @@ public interface StoreService extends IService<Store> {
     Result getStoresByFilters(String category, String floor, int page, int size);
 
     Result getStoreInfoById(int id);
+
+    Result addFavoriteStore(String token, int storeId);
+
+    Result removefavoriteStore(String token, int storeId);
+
+    Result viewfavoritesStore(String token);
 }

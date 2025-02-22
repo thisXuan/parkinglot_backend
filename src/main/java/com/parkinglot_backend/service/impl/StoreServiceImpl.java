@@ -5,14 +5,18 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.parkinglot_backend.entity.Store;
+import com.parkinglot_backend.mapper.CollectTableMapper;
 import com.parkinglot_backend.mapper.ParkingSpotMapper;
 import com.parkinglot_backend.service.StoreService;
 import com.parkinglot_backend.mapper.StoreMapper;
+import com.parkinglot_backend.util.JwtUtils;
 import com.parkinglot_backend.util.Result;
+import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
 * @author minxuan
@@ -28,6 +32,9 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
 
     @Resource
     private ParkingSpotMapper parkingSpotMapper;
+
+    @Resource
+    private CollectTableMapper collectTableMapper;
 
     @Override
     public Result getStoreInfo(int page) {
@@ -96,6 +103,66 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
             return Result.fail("该店铺不存在！");
         }
         return Result.ok(store);
+    }
+
+    @Override
+    public Result addFavoriteStore(String token, int storeId) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        if (userId == null) {
+            return Result.fail("未登录");
+        }
+
+        // 检查记录是否已存在
+        boolean exists = collectTableMapper.selectExistUserStore(userId, storeId) > 0;
+        if (exists) {
+            return Result.fail("已经收藏过该店铺");
+        }
+
+        // 插入新记录
+        int rowsAffected = collectTableMapper.insertUserStore(userId, storeId);
+        if (rowsAffected == 0) {
+            return Result.fail("收藏失败");
+        } else {
+            return Result.ok("收藏成功");
+
+        }
+    }
+
+    @Override
+    public Result removefavoriteStore(String token, int storeId) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        if (userId == null) {
+            return Result.fail("未登录");
+        }
+
+        // 删除记录
+        int rowsAffected = collectTableMapper.deleteFavoriteStore(userId, storeId);
+        if (rowsAffected == 0) {
+            return Result.fail("未收藏该店铺");
+        } else {
+            return Result.ok("取消收藏成功");
+        }
+    }
+
+    @Override
+    public Result viewfavoritesStore(String token) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        if (userId == null) {
+            return Result.fail("未登录");
+        }
+
+        // 查询用户的收藏店铺信息
+        List<Store> favoriteStores = collectTableMapper.selectAllFavoriteStores(userId);
+
+        if (favoriteStores.isEmpty()) {
+            return Result.ok("没有收藏的店铺");
+        } else {
+            return Result.ok(favoriteStores);
+        }
+
     }
 
 

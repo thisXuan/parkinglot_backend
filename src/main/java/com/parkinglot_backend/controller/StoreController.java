@@ -6,10 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -59,6 +56,24 @@ public class StoreController {
         //System.out.println(floor);
         // 调用服务层获取商铺数据
         return storeService.getStoresByFilters(category, floor, page, size);
+    }
+
+    @Operation(summary = "收藏商铺")
+    @PostMapping("/likes")
+    public Result addFavorite(@RequestHeader("token")String token,@RequestParam int store_id){
+        return storeService.addFavoriteStore(token,store_id);
+    }
+
+    @Operation(summary = "取消收藏商铺")
+    @PostMapping("/removeLikes")
+    public Result removeFavorite(@RequestHeader("token")String token,@RequestParam int store_id){
+        return storeService.removefavoriteStore(token,store_id);
+    }
+
+    @Operation(summary = "取消收藏商铺")
+    @GetMapping("/viewLikes")
+    public Result viewFavorite(@RequestHeader("token")String token){
+        return storeService.viewfavoritesStore(token);
     }
 
 }

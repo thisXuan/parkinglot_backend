@@ -23,7 +23,7 @@ public class Voucher implements Serializable {
 
     private String rules;
 
-    private Integer payvalue;
+    private Double payvalue;
 
     private Integer actualvalue;
 

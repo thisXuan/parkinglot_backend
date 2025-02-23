@@ -1,6 +1,7 @@
 package com.parkinglot_backend.controller;
 
 import com.parkinglot_backend.service.StoreService;
+import com.parkinglot_backend.service.VoucherService;
 import com.parkinglot_backend.util.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +17,9 @@ public class StoreController {
 
     @Autowired
     private StoreService storeService;
+
+    @Autowired
+    private VoucherService voucherService;
 
     @Operation(summary = "获取店铺信息")
     @GetMapping("/getStoreInfo")
@@ -74,6 +78,18 @@ public class StoreController {
     @GetMapping("/viewLikes")
     public Result viewFavorite(@RequestHeader("token")String token){
         return storeService.viewfavoritesStore(token);
+    }
+
+    @Operation(summary = "购买优惠券")
+    @PostMapping("/buyVoucher")
+    public Result buyVoucherInStore(@RequestHeader("token")String token , @RequestParam int voucher_id){
+        return voucherService.buyVoucher(token,voucher_id);
+    }
+
+    @Operation(summary = "查看我的订单")
+    @GetMapping("/getOrder")
+    public Result getMyOrder(@RequestHeader("token")String token , @RequestParam(value = "type", required = false) Integer type){
+        return voucherService.getOrder(token,type);
     }
 
 }

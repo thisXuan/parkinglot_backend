@@ -12,4 +12,8 @@ import com.parkinglot_backend.util.Result;
 public interface VoucherService extends IService<Voucher> {
 
     Result getVoucherByShopId(int shopId);
+
+    Result buyVoucher(String token, int voucherId);
+
+    Result getOrder(String token, Integer type);
 }

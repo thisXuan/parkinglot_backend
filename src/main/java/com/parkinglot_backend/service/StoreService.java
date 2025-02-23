@@ -29,4 +29,6 @@ public interface StoreService extends IService<Store> {
     Result removefavoriteStore(String token, int storeId);
 
     Result viewfavoritesStore(String token);
+
+    Result viewLikesByStore(String token, int storeId);
 }

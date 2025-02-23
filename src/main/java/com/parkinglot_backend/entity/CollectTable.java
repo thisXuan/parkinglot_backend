@@ -3,6 +3,7 @@ package com.parkinglot_backend.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
  * @Description:
  */
 
-
+@TableName("CollectTable")
 public class CollectTable implements Serializable {
     @TableId(value = "id", type = IdType.NONE) // 假设id不是自增，需要手动插入
     private Integer id;

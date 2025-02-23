@@ -1,10 +1,13 @@
 package com.parkinglot_backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.parkinglot_backend.entity.CollectTable;
 import com.parkinglot_backend.entity.Store;
+import com.parkinglot_backend.entity.Voucher;
 import com.parkinglot_backend.mapper.CollectTableMapper;
 import com.parkinglot_backend.mapper.ParkingSpotMapper;
 import com.parkinglot_backend.service.StoreService;
@@ -163,6 +166,18 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
             return Result.ok(favoriteStores);
         }
 
+    }
+
+    @Override
+    public Result viewLikesByStore(String token, int storeId) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        QueryWrapper<CollectTable> storeId1 = new QueryWrapper<CollectTable>().eq("store_id", storeId).eq("user_id",userId);
+        CollectTable collectTable = collectTableMapper.selectOne(storeId1);
+        if (collectTable == null) {
+            return Result.ok(0);
+        }
+        return Result.ok(1);
     }
 
 

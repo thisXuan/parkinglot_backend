@@ -74,10 +74,16 @@ public class StoreController {
         return storeService.removefavoriteStore(token,store_id);
     }
 
-    @Operation(summary = "取消收藏商铺")
+    @Operation(summary = "查看收藏")
     @GetMapping("/viewLikes")
     public Result viewFavorite(@RequestHeader("token")String token){
         return storeService.viewfavoritesStore(token);
+    }
+
+    @Operation(summary = "是否收藏某店铺")
+    @GetMapping("/viewLikesByStore")
+    public Result viewLikesByStore(@RequestHeader("token")String token,@RequestParam int store_id){
+        return storeService.viewLikesByStore(token,store_id);
     }
 
     @Operation(summary = "购买优惠券")

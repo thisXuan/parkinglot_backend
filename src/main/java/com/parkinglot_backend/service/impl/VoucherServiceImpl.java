@@ -52,6 +52,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher>
         }
         double pay_Value = voucherMapper.selectPayValueById(voucherId);
         LocalDateTime now = LocalDateTime.now();
+        System.out.println(now);
 
         orderMapper.insertOrder(redisIdWorker.nextId("order"), userId, voucherId, now, pay_Value, 2);
 

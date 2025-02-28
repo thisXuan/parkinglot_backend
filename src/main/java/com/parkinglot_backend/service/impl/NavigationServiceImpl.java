@@ -230,6 +230,12 @@ public class NavigationServiceImpl implements NavigationService {
                             System.out.println("换楼层");
                             flagFloor = false;
                             storeIds.add(5000);
+                            String newFloor = point.getFloor();
+                            //System.out.println(point.getFloor());
+                            if(newFloor.equals("B2")){
+                                //System.out.println("10000");
+                                storeIds.add(10000);
+                            }
                         }
                     }
 
@@ -253,6 +259,11 @@ public class NavigationServiceImpl implements NavigationService {
                 storeNames.add("乘坐电梯");
                 System.out.println("乘坐电梯");
                 continue;
+            }
+            if(storeId == 10000){
+                storeNames.add("到达停车场");
+                System.out.println("到达停车场");
+                break;
             }
             String storeName = storeMapper.getStoreNameById(storeId);
 

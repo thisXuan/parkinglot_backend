@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.parkinglot_backend.dto.ForgetPasswordDTO;
 import com.parkinglot_backend.dto.LoginFormDTO;
 import com.parkinglot_backend.dto.RegisterDTO;
+import com.parkinglot_backend.dto.UserDTO;
 import com.parkinglot_backend.entity.User;
 import com.parkinglot_backend.service.UserService;
 import com.parkinglot_backend.mapper.UserMapper;
 import com.parkinglot_backend.service.VerificationCodeService;
 import com.parkinglot_backend.util.JwtUtils;
 import com.parkinglot_backend.util.Result;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -31,6 +33,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Autowired
     private VerificationCodeService verificationCodeService; // 注入验证码服务
 
+    @Resource
+    private UserMapper userMapper;
+
     @Override
     public Result login(LoginFormDTO loginForm, HttpSession session) {
         // 1. 校验数据库中是否存在
@@ -48,8 +53,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 4. 如果密码正确，返回jwt token
         Map<String, Object> claims = new HashMap<>();
         claims.put("UserId", user.getId());
+        Boolean type = userMapper.getUserTypeById(user.getId());
         String jwt = JwtUtils.generateJwt(claims);
-        return Result.ok(jwt);
+        UserDTO userDTO = new UserDTO(jwt,type);
+        System.out.println(userDTO);
+        return Result.ok(userDTO);
     }
 
     @Override

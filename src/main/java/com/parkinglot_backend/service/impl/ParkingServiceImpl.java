@@ -2,16 +2,21 @@ package com.parkinglot_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.parkinglot_backend.dto.Coordinates;
 import com.parkinglot_backend.dto.ParkingTimeAndLocationDTO;
 import com.parkinglot_backend.entity.Car;
+import com.parkinglot_backend.entity.ParkingPoint;
 import com.parkinglot_backend.entity.ParkingRecord;
 import com.parkinglot_backend.mapper.CarMapper;
+import com.parkinglot_backend.mapper.ParkingPointMapper;
 import com.parkinglot_backend.mapper.ParkingRecordMapper;
+import com.parkinglot_backend.mapper.ParkingSpotMapper;
 import com.parkinglot_backend.service.CarService;
 import com.parkinglot_backend.service.ParkingService;
 import com.parkinglot_backend.util.JwtUtils;
 import com.parkinglot_backend.util.Result;
 import io.jsonwebtoken.Claims;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +33,11 @@ public class ParkingServiceImpl extends ServiceImpl<ParkingRecordMapper,ParkingR
 
     @Resource
     private ParkingRecordMapper parkingRecordMapper;
+    @Resource
+    private ParkingPointMapper parkingPointMapper;
+
+    @Resource
+    private ParkingSpotMapper parkingSpotMapper;
 
     @Resource
     private CarMapper carMapper;
@@ -51,7 +61,7 @@ public class ParkingServiceImpl extends ServiceImpl<ParkingRecordMapper,ParkingR
             return Result.fail("未查询到停车记录！");
         }
         Date entrytime = parkingRecord.getEntrytime();
-        String parkingspace = parkingRecord.getParkingspace();
+        String parkingspace = parkingRecord.getParkingSpace();
         ParkingTimeAndLocationDTO parkingTimeAndLocationDTO = new ParkingTimeAndLocationDTO();
         parkingTimeAndLocationDTO.setParkingTime(entrytime);
         parkingTimeAndLocationDTO.setLocation(parkingspace);
@@ -105,6 +115,29 @@ public class ParkingServiceImpl extends ServiceImpl<ParkingRecordMapper,ParkingR
         parkingRecord1.setExittime(entrytime);
         updateById(parkingRecord1);
         return Result.ok("操作成功");
+    }
+
+    @Override
+    public Result getMyLocation(String token) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        //System.out.println("userId"+userId);
+        String parking_space = parkingRecordMapper.selectParkingSpaceById(userId);
+        //System.out.println("parking_space"+parking_space);
+        Integer spotId = parkingSpotMapper.findSpotIdBySpotName(parking_space);
+        //System.out.println("spotId"+spotId);
+        Coordinates coordinates = parkingPointMapper.selectXYCoordinatesById(spotId);
+        //System.out.println(coordinates);
+        return Result.ok(coordinates);
+    }
+
+    @Override
+    public Result getNoCarLocation(String token) {
+        List<Integer>  listSpotId = parkingSpotMapper.selectSpotIdsByOccupiedStatus(false);
+        //System.out.println(listSpotId);
+        List<Coordinates> coordinatesList = parkingPointMapper.selectCoordinatesByIds(listSpotId);
+        //System.out.println(coordinatesList);
+        return Result.ok(coordinatesList);
     }
 
     @Override

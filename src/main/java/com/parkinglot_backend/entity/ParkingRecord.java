@@ -22,7 +22,8 @@ public class ParkingRecord implements Serializable {
 
     private Date exittime;
 
-    private String parkingspace;
+  //  @TableField("parkingSpace")
+    private String parkingSpace;
 
     private String payment;
 

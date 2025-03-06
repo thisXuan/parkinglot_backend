@@ -4,6 +4,7 @@ import com.parkinglot_backend.entity.Store;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -40,6 +41,13 @@ public interface StoreMapper extends BaseMapper<Store> {
 
     @Select("SELECT storename FROM Store WHERE id = #{id}")
     String getStoreNameById(@Param("id") Integer id);
+
+    @Select("SELECT id FROM Store WHERE storename = #{storename}")
+    Integer getIdByStoreName(@Param("storename") String storename);
+
+    @Update("UPDATE Store SET storeName = #{storeName} WHERE id = #{id}")
+    int updateStoreNameAndCategory(@Param("id") int id,
+                                   @Param("storeName") String storeName);
 }
 
 

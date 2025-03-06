@@ -3,7 +3,9 @@ package com.parkinglot_backend.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.parkinglot_backend.dto.StoreDTO;
 import com.parkinglot_backend.entity.ShopLocation;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -35,4 +37,9 @@ public interface ShopLocationMapper extends BaseMapper<ShopLocation> {
             "FROM shopLocation sl " +
             "WHERE sl.floorNumber = #{floorNumber}")
     List<StoreDTO> selectShopLocationsByFloorNumber(String floorNumber);
+
+    @Update("UPDATE shopLocation " +
+            "SET name = #{newName} " +
+            "WHERE name = #{oldName}")
+    int updateShopLocationName(@Param("oldName") String oldName, @Param("newName") String newName);
 }

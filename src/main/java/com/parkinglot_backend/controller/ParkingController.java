@@ -71,5 +71,16 @@ public class ParkingController {
         return parkingService.getMyCar(token);
     }
 
+    @Operation(summary = "获取我的车辆位置")
+    @GetMapping("/location")
+    public Result getLocation(@RequestHeader("token")String token){
+        return parkingService.getMyLocation(token);
+    }
+
+    @Operation(summary = "获取空车位")
+    @GetMapping("/nulllocation")
+    public Result getNullLocation(@RequestHeader("token")String token){
+        return parkingService.getNoCarLocation(token);
+    }
 
 }

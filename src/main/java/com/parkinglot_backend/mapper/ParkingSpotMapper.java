@@ -14,4 +14,11 @@ public interface ParkingSpotMapper extends BaseMapper<ParkingSpot> {
     @Select("SELECT spot_name FROM ParkingSpots")
     List<String> findAllName();
 
+    @Select("SELECT spot_id FROM ParkingSpots WHERE spot_name=#{spotName}")
+    Integer findSpotIdBySpotName(@Param("spotName") String spotName);
+
+    // 返回所有 is_occupied 等于某个值的 spot_id 列表
+    @Select("SELECT spot_id FROM ParkingSpots WHERE is_occupied = #{isOccupied}")
+    List<Integer> selectSpotIdsByOccupiedStatus(@Param("isOccupied") boolean isOccupied);
+
 }

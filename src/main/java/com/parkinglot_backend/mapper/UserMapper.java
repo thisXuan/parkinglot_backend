@@ -22,7 +22,7 @@ public interface UserMapper extends BaseMapper<User> {
     void updatePointByUserId(@Param("userId") Integer userId, @Param("point") Integer point);
 
     @Select("SELECT type FROM user WHERE id = #{id}")
-    Boolean getUserTypeById(@Param("id") Integer id);
+    int getUserTypeById(@Param("id") Integer id);
 
 }
 

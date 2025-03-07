@@ -16,9 +16,22 @@ import com.parkinglot_backend.util.JwtUtils;
 import com.parkinglot_backend.util.Result;
 import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
+import org.apache.lucene.util.QueryBuilder;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -30,6 +43,8 @@ import java.util.UUID;
 public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
     implements StoreService{
 
+    @Autowired
+    private RestHighLevelClient esClient;
     @Resource
     private StoreMapper storeMapper;
 
@@ -50,11 +65,50 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
 
     @Override
     public Result queryStoreInfo(String query) {
-        List<Store> stores = storeMapper.searchStore(query);
-        if(stores.isEmpty()){
-            return Result.fail("未查找到相关店铺");
+        SearchRequest searchRequest = new SearchRequest("store_index"); // 索引名称
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        //QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(query, "storeName", "address");
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query, "storeName", "address")); // 根据店铺名称和地址搜索
+
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+            SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
+            List<Store> stores = parseSearchResponse(searchResponse);
+            if (stores.isEmpty()) {
+                return Result.fail("未查找到相关店铺");
+            }
+            return Result.ok(stores);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Result.fail("查询失败");
         }
-        return Result.ok(stores);
+    }
+
+    public List<Store> parseSearchResponse(SearchResponse searchResponse) throws IOException {
+        List<Store> stores = new ArrayList<>();
+        SearchHits hits = searchResponse.getHits(); // 获取搜索命中的文档列表
+        SearchHit[] hitArray = hits.getHits(); // 将命中的文档列表转换为数组
+
+        for (SearchHit hit : hitArray) {
+            Store store = new Store(); // 创建一个新的 Store 对象
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap(); // 获取文档的原始 JSON 内容
+
+            // 根据 Store 类的字段提取数据
+            store.setId((Integer) sourceAsMap.get("id"));
+            store.setStoreName((String) sourceAsMap.get("storeName"));
+            store.setServiceCategory((String) sourceAsMap.get("serviceCategory"));
+            store.setServiceType((String) sourceAsMap.get("serviceType"));
+            store.setBusinessHours((String) sourceAsMap.get("businessHours"));
+            store.setAddress((String) sourceAsMap.get("address"));
+            store.setFloorNumber((Integer) sourceAsMap.get("floorNumber"));
+            store.setDescription((String) sourceAsMap.get("description"));
+            store.setRecommendedServices((Object) sourceAsMap.get("recommendedServices"));
+            store.setImage((String) sourceAsMap.get("image"));
+
+            stores.add(store); // 将 Store 对象添加到列表中
+        }
+        return stores; // 返回包含所有 Store 对象的列表
     }
 
     @Override

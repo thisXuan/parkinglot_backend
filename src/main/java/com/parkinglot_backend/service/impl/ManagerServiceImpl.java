@@ -33,8 +33,8 @@ public class ManagerServiceImpl implements ManagerService {
     public Result changeStoreLocation(String token,ChangeNameDTO changeNameDTO) {
         Claims claims = JwtUtils.parseJWT(token);
         Integer userId = claims.get("UserId", Integer.class);
-        boolean type = userMapper.getUserTypeById(userId);
-        if(type == false){
+        int type = userMapper.getUserTypeById(userId);
+        if(type == 0){
             return Result.fail("非管理员无修改资质");
         }
         String beforeName = changeNameDTO.getBeforeName();

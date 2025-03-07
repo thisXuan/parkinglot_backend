@@ -4,8 +4,11 @@ import com.parkinglot_backend.dto.ChangeNameDTO;
 import com.parkinglot_backend.mapper.ShopLocationMapper;
 import com.parkinglot_backend.mapper.StoreMapper;
 import com.parkinglot_backend.mapper.StorePointMapper;
+import com.parkinglot_backend.mapper.UserMapper;
 import com.parkinglot_backend.service.ManagerService;
+import com.parkinglot_backend.util.JwtUtils;
 import com.parkinglot_backend.util.Result;
+import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +26,17 @@ public class ManagerServiceImpl implements ManagerService {
     private StorePointMapper storePointMapper;
     @Resource
     private ShopLocationMapper shopLocationMapper;
+    @Resource
+    private UserMapper userMapper;
 
     @Override
-    public Result changeStoreLocation(ChangeNameDTO changeNameDTO) {
+    public Result changeStoreLocation(String token,ChangeNameDTO changeNameDTO) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        boolean type = userMapper.getUserTypeById(userId);
+        if(type == false){
+            return Result.fail("非管理员无修改资质");
+        }
         String beforeName = changeNameDTO.getBeforeName();
         String afterName = changeNameDTO.getAfterName();
         int res = shopLocationMapper.updateShopLocationName(beforeName,afterName);

@@ -11,8 +11,8 @@ import lombok.Data;
 @Data
 public class UserDTO {
     private String jwt;
-    private Boolean type;
-    public UserDTO(String jwt,Boolean type){
+    private int type;
+    public UserDTO(String jwt,int type){
         this.jwt = jwt;
         this.type = type;
     }

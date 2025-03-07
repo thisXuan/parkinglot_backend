@@ -51,9 +51,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return Result.fail("密码错误！");
         }
         // 4. 如果密码正确，返回jwt token
+        // type 0为普通用户，1为管理员
         Map<String, Object> claims = new HashMap<>();
         claims.put("UserId", user.getId());
-        Boolean type = userMapper.getUserTypeById(user.getId());
+        int type = userMapper.getUserTypeById(user.getId());
         String jwt = JwtUtils.generateJwt(claims);
         UserDTO userDTO = new UserDTO(jwt,type);
         System.out.println(userDTO);

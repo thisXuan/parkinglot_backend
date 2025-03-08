@@ -27,7 +27,7 @@ public class DataSyncUtil {
     @Resource
     private StoreMapper storeMapper; // 数据库操作类（MyBatis Mapper）
 
-//    @Scheduled(fixedRate = 360000) // 每小时同步一次
+//    @Scheduled(fixedRate = 36) // 每小时同步一次
 //    public void syncData() {
 //        List<Store> stores = storeMapper.findAllStores(); // 从数据库获取所有店铺数据
 //        for (Store store : stores) {

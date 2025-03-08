@@ -47,6 +47,18 @@ public class UserController {
         return userService.getUserInfo(phone);
     }
 
+    @Operation(summary = "获取用户信息")
+    @GetMapping("/getUserRole")
+    public Result getUserRole(@RequestHeader("token")String token){
+        return userService.getUserRole(token);
+    }
+
+    @Operation(summary = "返回用户信息")
+    @GetMapping("/getUsers")
+    public Result getUsers(@RequestHeader("token")String token){
+        return userService.getUsers(token);
+    }
+
     @Operation(summary = "注册账号")
     @PostMapping("/register")
     public Result register(@RequestBody RegisterDTO registerDTO) {

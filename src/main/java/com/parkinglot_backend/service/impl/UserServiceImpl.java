@@ -2,16 +2,14 @@ package com.parkinglot_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.parkinglot_backend.dto.ForgetPasswordDTO;
-import com.parkinglot_backend.dto.LoginFormDTO;
-import com.parkinglot_backend.dto.RegisterDTO;
-import com.parkinglot_backend.dto.UserDTO;
+import com.parkinglot_backend.dto.*;
 import com.parkinglot_backend.entity.User;
 import com.parkinglot_backend.service.UserService;
 import com.parkinglot_backend.mapper.UserMapper;
 import com.parkinglot_backend.service.VerificationCodeService;
 import com.parkinglot_backend.util.JwtUtils;
 import com.parkinglot_backend.util.Result;
+import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
 * @author minxuan
@@ -164,6 +164,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return Result.fail("用户不存在！");
         }
         return Result.ok(user);
+    }
+
+    @Override
+    public Result getUserRole(String token) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        User user = query().eq("id", userId).one();
+        if(user==null){
+            return Result.fail("用户不存在");
+        }
+        return Result.ok(user.getType());
+    }
+
+    @Override
+    public Result getUsers(String token) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        User u = query().eq("id", userId).one();
+        if(u.getType()==0){
+            return Result.fail("没有权限");
+        }
+        List<User> list = query().list();
+        List<UserMessageDTO> dtoList = list.stream()
+                .map(user -> new UserMessageDTO(
+                        user.getId(),
+                        user.getName(),
+                        user.getPhone(),
+                        user.getPoint(),
+                        user.getType()))
+                .collect(Collectors.toList());
+        return Result.ok(dtoList);
     }
 
     /**

@@ -25,4 +25,8 @@ public interface UserService extends IService<User> {
     Result resetPassword(ForgetPasswordDTO forgetPasswordDTO);
 
     Result getUserInfo(String phone);
+
+    Result getUserRole(String token);
+
+    Result getUsers(String token);
 }

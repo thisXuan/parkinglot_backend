@@ -21,4 +21,6 @@ public interface ParkingSpotMapper extends BaseMapper<ParkingSpot> {
     @Select("SELECT spot_id FROM ParkingSpots WHERE is_occupied = #{isOccupied}")
     List<Integer> selectSpotIdsByOccupiedStatus(@Param("isOccupied") boolean isOccupied);
 
+    @Select("SELECT spot_name FROM ParkingSpots WHERE spot_name LIKE CONCAT('%', #{query}, '%')")
+    List<String> findSpotNamesByQuery(@Param("query") String query);
 }

@@ -29,10 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
 * @author minxuan
@@ -126,11 +123,52 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
     }
 
     @Override
-    public Result getStoreName() {
-        List<String> allNames = storeMapper.findAllStoreNames();
-        List<String> parkingNames = parkingSpotMapper.findAllName();
-        allNames.addAll(parkingNames);
-        return Result.ok(allNames);
+    public Result getStoreName(String query) {
+//        List<String> allNames = storeMapper.findAllStoreNames();
+//        List<String> parkingNames = parkingSpotMapper.findAllName();
+//        allNames.addAll(parkingNames);
+//        return Result.ok(allNames);
+
+        SearchRequest searchRequest = new SearchRequest("store_index"); // 索引名称
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query, "storeName", "address")); // 根据店铺名称和地址搜索
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+            SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
+            List<String> storeNames = parseStoreNames(searchResponse); // 修改为提取 storeName 列表
+
+            // 使用 MyBatis-Plus 进行模糊查询
+            List<String> parkingNames = parkingSpotMapper.findSpotNamesByQuery(query);
+
+            // 合并两个结果列表，并去重
+            List<String> allNames = new ArrayList<>(storeNames);
+            allNames.addAll(parkingNames);
+            allNames = new ArrayList<>(new LinkedHashSet<>(allNames)); // 去重
+
+            if (allNames.isEmpty()) {
+                return Result.fail("未查找到相关店铺");
+            }
+            return Result.ok(allNames); // 返回合并后的 storeName 列表
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Result.fail("查询失败");
+        }
+    }
+
+    private List<String> parseStoreNames(SearchResponse searchResponse) {
+        List<String> storeNames = new ArrayList<>();
+        // 遍历搜索结果
+        for (SearchHit hit : searchResponse.getHits().getHits()) {
+            // 将每个搜索结果的 JSON 字符串解析为 Map
+            Map<String, Object> sourceMap = hit.getSourceAsMap();
+            // 提取 storeName 字段
+            Object storeName = sourceMap.get("storeName");
+            if (storeName != null) {
+                storeNames.add(storeName.toString());
+            }
+        }
+        return storeNames;
     }
 
     @Override

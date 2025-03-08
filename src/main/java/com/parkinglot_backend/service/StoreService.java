@@ -17,7 +17,7 @@ public interface StoreService extends IService<Store> {
 
     Result getServiceCategory(String query);
 
-    Result getStoreName();
+    Result getStoreName(String query);
 
     // 根据筛选条件获取商铺列表
     Result getStoresByFilters(String category, String floor, int page, int size);

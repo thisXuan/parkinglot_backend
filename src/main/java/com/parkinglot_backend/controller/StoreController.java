@@ -44,10 +44,10 @@ public class StoreController {
         return storeService.getServiceCategory(query);
     }
 
-    @Operation(summary = "返回所有商铺名字")
+    @Operation(summary = "返回对应商铺名字")
     @GetMapping("/getStoreName")
-    public Result getStoreName(){
-        return storeService.getStoreName();
+    public Result getStoreName(@RequestParam String query){
+        return storeService.getStoreName(query);
     }
 
     @Operation(summary = "根据店铺id返回店铺数据")

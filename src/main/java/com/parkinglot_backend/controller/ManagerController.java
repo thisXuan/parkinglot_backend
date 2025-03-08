@@ -26,7 +26,7 @@ public class ManagerController {
     private ManagerService managerService;
 
     @Operation(summary = "修改店铺位置")
-    @GetMapping("/change")
+    @PostMapping("/change")
     public Result changeLocation(@RequestHeader("token")String token, @RequestBody ChangeNameDTO changeNameDTO) {
         return managerService.changeStoreLocation(token,changeNameDTO);
     }

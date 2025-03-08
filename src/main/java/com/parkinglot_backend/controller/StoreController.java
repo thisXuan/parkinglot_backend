@@ -1,5 +1,7 @@
 package com.parkinglot_backend.controller;
 
+import com.parkinglot_backend.entity.Store;
+import com.parkinglot_backend.service.ManagerService;
 import com.parkinglot_backend.service.StoreService;
 import com.parkinglot_backend.service.VoucherService;
 import com.parkinglot_backend.util.Result;
@@ -20,6 +22,9 @@ public class StoreController {
 
     @Autowired
     private VoucherService voucherService;
+
+    @Autowired
+    private ManagerService managerService;
 
     @Operation(summary = "获取店铺信息")
     @GetMapping("/getStoreInfo")
@@ -96,6 +101,12 @@ public class StoreController {
     @GetMapping("/getOrder")
     public Result getMyOrder(@RequestHeader("token")String token , @RequestParam(value = "type", required = false) Integer type){
         return voucherService.getOrder(token,type);
+    }
+
+    @Operation(summary = "更新商铺")
+    @GetMapping("/updateStore")
+    public Result updateNewStore(@RequestHeader("token")String token , @RequestBody Store store){
+        return managerService.changeStoreLocation(token,store);
     }
 
 }

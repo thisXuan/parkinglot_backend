@@ -56,6 +56,11 @@ public class StoreController {
         return storeService.getStoreInfoById(id);
     }
 
+    @GetMapping("/getAllName")
+    public Result getAllName(){
+        return storeService.getAllName();
+    }
+
     // 获取符合条件的商铺列表
     @GetMapping("/get_stores")
     public Result getStores(@RequestParam String category,

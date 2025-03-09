@@ -109,7 +109,7 @@ public class StoreController {
     }
 
     @Operation(summary = "更新商铺")
-    @GetMapping("/updateStore")
+    @PostMapping("/updateStore")
     public Result updateNewStore(@RequestHeader("token")String token , @RequestBody Store store){
         return managerService.changeStoreLocation(token,store);
     }

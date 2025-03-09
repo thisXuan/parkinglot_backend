@@ -31,4 +31,6 @@ public interface StoreService extends IService<Store> {
     Result viewfavoritesStore(String token);
 
     Result viewLikesByStore(String token, int storeId);
+
+    Result getAllName();
 }

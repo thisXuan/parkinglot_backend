@@ -62,6 +62,8 @@ public class ShopOnMapServiceImpl implements ShopOnMapService {
         // 判断筛选结果并封装返回
         if (!filteredStoreDetails.isEmpty()) {
             return Result.ok(filteredStoreDetails);
+        } else if (floor.equals("B2")) {
+            return Result.ok(filteredStoreDetails);
         } else {
             return Result.fail("指定楼层没有找到商铺");
         }

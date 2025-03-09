@@ -226,6 +226,9 @@ public class NavigationServiceImpl implements NavigationService {
             for (Point point : pointList) {
                 if (pointToStoreMap.containsKey(point.getId())) {
                     if(flagFloor){
+                        if(startFloor.equals("B2")&&startFloor.equals(point.getFloor())){
+                            continue;
+                        }
                         if(!startFloor.equals(point.getFloor())){
                             System.out.println("换楼层");
                             flagFloor = false;

@@ -83,4 +83,9 @@ public class ParkingController {
         return parkingService.getNoCarLocation(token);
     }
 
+    @Operation(summary = "获取被占据车位")
+    @GetMapping("/fulllocation")
+    public Result getFullLocation(@RequestHeader("token")String token){
+        return parkingService.getHasCarLocation(token);
+    }
 }

@@ -18,4 +18,6 @@ public interface ParkingService extends IService<ParkingRecord> {
     Result getMyLocation(String token);
 
     Result getNoCarLocation(String token);
+
+    Result getHasCarLocation(String token);
 }

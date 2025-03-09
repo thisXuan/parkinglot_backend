@@ -141,6 +141,15 @@ public class ParkingServiceImpl extends ServiceImpl<ParkingRecordMapper,ParkingR
     }
 
     @Override
+    public Result getHasCarLocation(String token) {
+        List<Integer>  listSpotId = parkingSpotMapper.selectSpotIdsByOccupiedStatus(true);
+        //System.out.println(listSpotId);
+        List<Coordinates> coordinatesList = parkingPointMapper.selectCoordinatesByIds(listSpotId);
+        //System.out.println(coordinatesList);
+        return Result.ok(coordinatesList);
+    }
+
+    @Override
     public Result getPayment(String token) {
         Claims claims = JwtUtils.parseJWT(token);
         Integer userId = claims.get("UserId", Integer.class);

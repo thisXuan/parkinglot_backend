@@ -23,4 +23,8 @@ public interface ParkingSpotMapper extends BaseMapper<ParkingSpot> {
 
     @Select("SELECT spot_name FROM ParkingSpots WHERE spot_name LIKE CONCAT('%', #{query}, '%')")
     List<String> findSpotNamesByQuery(@Param("query") String query);
+
+    // 查询 is_occupied 列中值为0的个数
+    @Select("SELECT COUNT(*) FROM ParkingSpots WHERE is_occupied = 0")
+    Integer countUnoccupiedSpots();
 }

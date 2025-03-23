@@ -28,4 +28,16 @@ public class VisitorController {
     public Result getTotalView(@RequestHeader("token")String token){
         return visitorService.getTotalViewService(token);
     }
+
+    @Operation(summary = "销售额分析")
+    @GetMapping("/salesAnalysis")
+    public Result getSalesAnalysis(@RequestHeader("token")String token){
+        return visitorService.getSalesAnalysisService(token);
+    }
+
+    @Operation(summary = "销售额分析")
+    @GetMapping("/orderAnalysis")
+    public Result getOrderAnalysis(@RequestHeader("token")String token){
+        return visitorService.getOrderAnalysisService(token);
+    }
 }

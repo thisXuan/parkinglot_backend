@@ -1,6 +1,7 @@
 package com.parkinglot_backend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.parkinglot_backend.dto.SalesDataDTO;
 import com.parkinglot_backend.entity.Order;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -27,4 +28,12 @@ public interface OrderMapper extends BaseMapper<Order>{
     // 根据userId和type返回订单
     @Select("SELECT * FROM `Order` WHERE user_id = #{userId} AND type = #{type}")
     List<Order> selectOrdersByUserIdAndType(@Param("userId") Integer userId, @Param("type") Integer type);
+
+    @Select({
+            "SELECT CAST(time AS DATE) as saleDate, SUM(pay_value) as totalSales",
+            "FROM `Order`",
+            "WHERE time >= DATE_SUB(NOW(), INTERVAL 7 DAY)",
+            "GROUP BY CAST(time AS DATE)"
+    })
+    List<SalesDataDTO> getSalesDataForLastSevenDays();
 }

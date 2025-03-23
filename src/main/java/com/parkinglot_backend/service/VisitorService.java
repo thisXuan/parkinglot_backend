@@ -8,4 +8,6 @@ public interface VisitorService {
     Result getOrderAnalysisService(String token);
 
     Result getSalesAnalysisService(String token);
+
+    Result getUserAnalysisService(String token);
 }

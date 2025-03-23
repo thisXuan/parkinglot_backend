@@ -25,5 +25,7 @@ public class User implements Serializable {
 
     private Integer type;
 
+    private String create_time;
+
     private static final long serialVersionUID = 1L;
 }

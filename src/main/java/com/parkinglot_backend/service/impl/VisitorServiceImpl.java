@@ -1,8 +1,6 @@
 package com.parkinglot_backend.service.impl;
 
-import com.parkinglot_backend.dto.DataDTO;
-import com.parkinglot_backend.dto.OrderDTO;
-import com.parkinglot_backend.dto.SalesDataDTO;
+import com.parkinglot_backend.dto.*;
 import com.parkinglot_backend.mapper.OrderMapper;
 import com.parkinglot_backend.mapper.ParkingSpotMapper;
 import com.parkinglot_backend.mapper.UserMapper;
@@ -16,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @Author: HeYuxin
@@ -108,11 +104,61 @@ public class VisitorServiceImpl implements VisitorService {
         }
         List<SalesDataDTO> salesData = orderMapper.getSalesDataForLastSevenDays();
         List<Integer> salesDataList = new ArrayList<>();
-        for (SalesDataDTO data : salesData) {
-            salesDataList.add(data.getTotalSales());
+        Map<LocalDate, Integer> salesMap = new HashMap<>();
+
+        // 填充过去七天的日期
+        LocalDate date = LocalDate.now();
+        for (int i = 0; i < 7; i++) {
+            salesMap.put(date.minusDays(i), 0);
         }
 
-        return Result.ok(salesData);
+        // 更新实际销售额数据
+        for (SalesDataDTO data : salesData) {
+            salesMap.put(data.getSaleDate(), data.getTotalSales());
+        }
+
+        // 构建返回列表
+        for (LocalDate d : salesMap.keySet()) {
+            salesDataList.add(salesMap.get(d));
+        }
+        Collections.reverse(salesDataList);
+        return Result.ok(salesDataList);
+    }
+
+    @Override
+    public Result getUserAnalysisService(String token) {
+        boolean tokenVa = tokenVaild(token);
+        if(!tokenVa){
+            return Result.fail("非管理员无查看资质");
+        }
+        int totalRegister = userMapper.getTotalUserCount();
+        //System.out.println(totalRegister);
+        int todayRegister = userMapper.getNewUsersToday();
+        //System.out.println(todayRegister);
+        List<RegistrationCount> weekRegister = userMapper.getNewUsersInLastSevenDays();
+        System.out.println(weekRegister);
+        List<Integer> weekRegisterList = new ArrayList<>();
+        Map<LocalDate, Integer> weekRegisterMap = new HashMap<>();
+        LocalDate now = LocalDate.now();
+        for (int i = 0; i < 7; i++) {
+            weekRegisterMap.put(now.minusDays(i), 0);
+        }
+        for (RegistrationCount data : weekRegister) {
+            weekRegisterMap.put(data.getRegDate(), data.getNewUserCount());
+        }
+        // 构建返回列表
+        for (LocalDate d : weekRegisterMap.keySet()) {
+            weekRegisterList.add(weekRegisterMap.get(d));
+        }
+        Collections.reverse(weekRegisterList);
+
+        UserAnalyticsDTO dataDTO = new UserAnalyticsDTO();
+        dataDTO.setTotalRegister(totalRegister);
+        dataDTO.setTodayRegister(todayRegister);
+        dataDTO.setWeekRegister(weekRegisterList);
+
+        return Result.ok(dataDTO);
+
     }
 
     private boolean tokenVaild(String token){

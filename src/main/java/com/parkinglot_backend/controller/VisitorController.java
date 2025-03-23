@@ -40,4 +40,10 @@ public class VisitorController {
     public Result getOrderAnalysis(@RequestHeader("token")String token){
         return visitorService.getOrderAnalysisService(token);
     }
+
+    @Operation(summary = "用户统计")
+    @GetMapping("/userAnalysis")
+    public Result getUserAnalysis(@RequestHeader("token")String token){
+        return visitorService.getUserAnalysisService(token);
+    }
 }

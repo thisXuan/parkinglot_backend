@@ -114,4 +114,16 @@ public class StoreController {
         return managerService.changeStoreLocation(token,store);
     }
 
+    @Operation(summary = "购买优惠券")
+    @PostMapping("/createOrder")
+    public Result createOrderInStore(@RequestHeader("token")String token , @RequestParam int voucher_id){
+        return voucherService.createOrder(token,voucher_id);
+    }
+
+    @Operation(summary = "购买优惠券")
+    @PostMapping("/payOrder")
+    public Result payOrderInStore(@RequestHeader("token")String token , @RequestParam long order_id){
+        return voucherService.payOrder(token,order_id);
+    }
+
 }

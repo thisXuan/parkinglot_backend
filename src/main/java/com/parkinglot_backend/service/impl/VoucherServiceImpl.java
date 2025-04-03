@@ -77,6 +77,33 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher>
         }
 
     }
+
+    @Override
+    public Result createOrder(String token, int voucherId) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        int stock = voucherMapper.selectStockById(voucherId);
+        if(stock <= 0){
+            return Result.fail("没有库存，购买失败");
+        }
+        double pay_Value = voucherMapper.selectPayValueById(voucherId);
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println(now);
+
+        long orderId = redisIdWorker.nextId("order");
+        orderMapper.insertOrder(orderId, userId, voucherId, now, pay_Value, 1);
+
+        // 更新优惠券库存
+        voucherMapper.updateStock(voucherId);
+        String str = String.valueOf(orderId);
+        return Result.ok(str);
+    }
+
+    @Override
+    public Result payOrder(String token, long orderId) {
+        orderMapper.updateOrderType(orderId,2);
+        return Result.ok("购买成功");
+    }
 }
 
 

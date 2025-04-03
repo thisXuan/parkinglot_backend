@@ -6,6 +6,7 @@ import com.parkinglot_backend.entity.Order;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,4 +37,7 @@ public interface OrderMapper extends BaseMapper<Order>{
             "GROUP BY CAST(time AS DATE)"
     })
     List<SalesDataDTO> getSalesDataForLastSevenDays();
+
+    @Update("UPDATE `Order` SET type = #{type} WHERE id = #{id}")
+    int updateOrderType(@Param("id") Long id, @Param("type") Integer type);
 }

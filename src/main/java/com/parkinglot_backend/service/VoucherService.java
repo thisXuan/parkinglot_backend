@@ -16,4 +16,8 @@ public interface VoucherService extends IService<Voucher> {
     Result buyVoucher(String token, int voucherId);
 
     Result getOrder(String token, Integer type);
+
+    Result createOrder(String token, int voucherId);
+
+    Result payOrder(String token, long orderId);
 }

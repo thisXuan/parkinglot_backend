@@ -40,4 +40,40 @@ public interface OrderMapper extends BaseMapper<Order>{
 
     @Update("UPDATE `Order` SET type = #{type} WHERE id = #{id}")
     int updateOrderType(@Param("id") Long id, @Param("type") Integer type);
+
+    @Select({
+            "SELECT CAST(time AS DATE) as saleDate, COUNT(*) as orderCount",
+            "FROM `Order`",
+            "WHERE time >= DATE_SUB(NOW(), INTERVAL 14 DAY)",
+            "GROUP BY CAST(time AS DATE)"
+    })
+    List<SalesDataDTO> getOrderCountForLastFourteenDays();
+
+    @Select({
+            "SELECT COUNT(*) as orderCount",
+            "FROM `Order`",
+            "WHERE DATE(time) = CURDATE()"
+    })
+    Integer getTodayOrderCount();
+
+    @Select({
+            "SELECT COUNT(*) as orderCount",
+            "FROM `Order`",
+            "WHERE DATE(time) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)"
+    })
+    Integer getYesterdayOrderCount();
+
+    @Select({
+            "SELECT COUNT(*) as orderCount",
+            "FROM `Order`",
+            "WHERE time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)"
+    })
+    Integer getRecentSevenDaysOrderCount();
+
+    @Select({
+            "SELECT COUNT(*) as orderCount",
+            "FROM `Order`",
+            "WHERE time >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)"
+    })
+    Integer getRecentFourteenDaysOrderCount();
 }

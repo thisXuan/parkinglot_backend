@@ -74,6 +74,8 @@ public class VisitorServiceImpl implements VisitorService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String dateString = date.format(formatter);
 
+        LocalDate previousDate = date.minusDays(1);
+
         // 从 MySQL 中获取访问人数
         Integer visitorCount = visitorMapper.getVisitorCountByDate(dateString);
         if (visitorCount == null) {
@@ -81,12 +83,15 @@ public class VisitorServiceImpl implements VisitorService {
             visitorMapper.insertVisitorCount(dateString, 0);
             visitorCount = 0;
         }
-        Random random = new Random();
-        Integer dayOrderDay = random.nextInt(99)+1; //随机数1-99
-        Integer weekOrderWeek = random.nextInt(99)+1; //随机数1-99
+        //Random random = new Random();
+        Integer dayOrderCount = orderMapper.getTodayOrderCount();
+        Integer yesterdayOrder = orderMapper.getYesterdayOrderCount();
+        Integer dayOrderDay = 100*(dayOrderCount-yesterdayOrder)/dayOrderCount;
 
-        List<SalesDataDTO> salesData = orderMapper.getSalesDataForLastSevenDays();
-        Integer weekOrder = salesData.size();
+        Integer weekOrder = orderMapper.getRecentSevenDaysOrderCount();
+        Integer lastFourteenOrder = orderMapper.getRecentFourteenDaysOrderCount();
+        Integer lastWeekOrder = lastFourteenOrder-weekOrder;
+        Integer weekOrderWeek = 100*(weekOrder-lastWeekOrder)/weekOrder;
 
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setTodayOrder(visitorCount);
@@ -165,7 +170,7 @@ public class VisitorServiceImpl implements VisitorService {
         Claims claims = JwtUtils.parseJWT(token);
         Integer userId = claims.get("UserId", Integer.class);
         int type = userMapper.getUserTypeById(userId);
-        if(type == 0){
+        if(type == 1){
             return false;
         }
         return  true;

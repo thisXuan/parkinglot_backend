@@ -132,7 +132,7 @@ public class ParkingServiceImpl extends ServiceImpl<ParkingRecordMapper,ParkingR
     }
 
     @Override
-    public Result getNoCarLocation(String token) {
+    public Result getNoCarLocation() {
         List<Integer>  listSpotId = parkingSpotMapper.selectSpotIdsByOccupiedStatus(false);
         //System.out.println(listSpotId);
         List<Coordinates> coordinatesList = parkingPointMapper.selectCoordinatesByIds(listSpotId);
@@ -141,7 +141,7 @@ public class ParkingServiceImpl extends ServiceImpl<ParkingRecordMapper,ParkingR
     }
 
     @Override
-    public Result getHasCarLocation(String token) {
+    public Result getHasCarLocation() {
         List<Integer>  listSpotId = parkingSpotMapper.selectSpotIdsByOccupiedStatus(true);
         //System.out.println(listSpotId);
         List<Coordinates> coordinatesList = parkingPointMapper.selectCoordinatesByIds(listSpotId);

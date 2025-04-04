@@ -23,7 +23,7 @@ public interface OrderMapper extends BaseMapper<Order>{
                     @Param("type") Integer type);
 
     // 根据userId返回所有订单
-    @Select("SELECT * FROM `Order` WHERE user_id = #{userId}")
+    @Select("SELECT * FROM `Order` WHERE user_id = #{userId} ORDER BY time DESC")
     List<Order> selectOrdersByUserId(@Param("userId") Integer userId);
 
     // 根据userId和type返回订单

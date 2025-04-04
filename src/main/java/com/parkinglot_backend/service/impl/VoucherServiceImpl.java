@@ -11,6 +11,7 @@ import com.parkinglot_backend.util.RedisIdWorker;
 import com.parkinglot_backend.util.Result;
 import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

@@ -130,6 +130,14 @@
             <version>7.13.2</version> <!-- 使用与你的 Elasticsearch 服务兼容的版本 -->
         </dependency>
 
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-extension</artifactId>
+            <version>3.5.5</version>
+        </dependency>
+
+
+
 
     </dependencies>
 

@@ -3,7 +3,9 @@ package com.parkinglot_backend.controller;
 import com.parkinglot_backend.dto.ForgetPasswordDTO;
 import com.parkinglot_backend.dto.LoginFormDTO;
 import com.parkinglot_backend.dto.RegisterDTO;
+import com.parkinglot_backend.dto.ReviewDTO;
 import com.parkinglot_backend.service.CouponService;
+import com.parkinglot_backend.service.ReviewService;
 import com.parkinglot_backend.service.UserService;
 import com.parkinglot_backend.service.sign_recordService;
 import com.parkinglot_backend.util.Result;
@@ -28,6 +30,9 @@ public class UserController {
 
     @Autowired
     private CouponService couponService;
+
+    @Autowired
+    private ReviewService reviewService;
 
     @Operation(summary = "用户登录")
     @PostMapping("/login")
@@ -99,6 +104,19 @@ public class UserController {
     @PostMapping("/exchangeCoupon")
     public Result exchangeCoupon(@RequestHeader("token")String token,@RequestParam("id")Integer id){
         return couponService.exchangeCoupon(token,id);
+    }
+
+    @Operation(summary = "提交评价")
+    @PostMapping("/postReview")
+    public Result postReview(@RequestHeader("token") String token, @RequestBody ReviewDTO reviewDTO) {
+        return reviewService.postReview(token, reviewDTO);
+    }
+
+    @Operation(summary = "查看评价")
+    @GetMapping("/getReview")
+    public Result getReview(@RequestHeader("token") String token) {
+        // 调用服务层方法获取评价信息
+        return reviewService.getReviewInfo(token);
     }
 
 }

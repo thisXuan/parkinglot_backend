@@ -170,7 +170,7 @@ public class VisitorServiceImpl implements VisitorService {
         Claims claims = JwtUtils.parseJWT(token);
         Integer userId = claims.get("UserId", Integer.class);
         int type = userMapper.getUserTypeById(userId);
-        if(type == 1){
+        if(type == 0){
             return false;
         }
         return  true;

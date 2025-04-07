@@ -16,5 +16,4 @@ public class ReviewDTO {
     private Integer rating;
     private List<String> tags;
     private String comment;
-    private Integer user_id;
 }

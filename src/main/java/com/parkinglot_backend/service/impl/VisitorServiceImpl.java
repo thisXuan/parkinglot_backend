@@ -86,12 +86,18 @@ public class VisitorServiceImpl implements VisitorService {
         //Random random = new Random();
         Integer dayOrderCount = orderMapper.getTodayOrderCount();
         Integer yesterdayOrder = orderMapper.getYesterdayOrderCount();
-        Integer dayOrderDay = 100*(dayOrderCount-yesterdayOrder)/dayOrderCount;
+        Integer dayOrderDay = 0; // 默认值
+        if (dayOrderCount != 0) {
+            dayOrderDay = 100 * (dayOrderCount - yesterdayOrder) / dayOrderCount;
+        }
 
         Integer weekOrder = orderMapper.getRecentSevenDaysOrderCount();
         Integer lastFourteenOrder = orderMapper.getRecentFourteenDaysOrderCount();
         Integer lastWeekOrder = lastFourteenOrder-weekOrder;
-        Integer weekOrderWeek = 100*(weekOrder-lastWeekOrder)/weekOrder;
+        Integer weekOrderWeek = 0; // 默认值
+        if (weekOrder != 0) {
+            weekOrderWeek = 100 * (weekOrder - lastWeekOrder) / weekOrder;
+        }
 
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setTodayOrder(visitorCount);

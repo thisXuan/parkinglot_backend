@@ -37,4 +37,7 @@ public class Order implements Serializable {
 
     @TableField("type")
     private Integer type;
+
+    @TableField("image")
+    private String image;
 }

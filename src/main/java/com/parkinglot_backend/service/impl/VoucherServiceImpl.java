@@ -55,7 +55,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher>
         LocalDateTime now = LocalDateTime.now();
         System.out.println(now);
 
-        orderMapper.insertOrder(redisIdWorker.nextId("order"), userId, voucherId, now, pay_Value, 2);
+        //orderMapper.insertOrder(redisIdWorker.nextId("order"), userId, voucherId, now, pay_Value, 2);
 
         // 更新优惠券库存
         voucherMapper.updateStock(voucherId);
@@ -88,11 +88,12 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher>
             return Result.fail("没有库存，购买失败");
         }
         double pay_Value = voucherMapper.selectPayValueById(voucherId);
+        String image = voucherMapper.selectImageById(voucherId);
         LocalDateTime now = LocalDateTime.now();
         System.out.println(now);
 
         long orderId = redisIdWorker.nextId("order");
-        orderMapper.insertOrder(orderId, userId, voucherId, now, pay_Value, 1);
+        orderMapper.insertOrder(orderId, userId, voucherId, now, pay_Value, 1,image);
 
         // 更新优惠券库存
         voucherMapper.updateStock(voucherId);

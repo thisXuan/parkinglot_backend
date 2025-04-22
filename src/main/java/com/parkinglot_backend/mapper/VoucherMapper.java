@@ -21,6 +21,9 @@ public interface VoucherMapper extends BaseMapper<Voucher> {
 
     @Update("UPDATE Voucher SET stock = stock - 1 WHERE id = #{voucherId} AND stock > 0")
     Integer updateStock(@Param("voucherId") Integer voucherId);
+
+    @Select("SELECT image FROM Voucher WHERE id = #{id}")
+    String selectImageById(@Param("id") Integer id);
 }
 
 

@@ -13,14 +13,15 @@ import java.util.List;
 
 public interface OrderMapper extends BaseMapper<Order>{
 
-    @Insert("INSERT INTO `Order` (id, user_id, voucher_id, time, pay_value, type) " +
-            "VALUES (#{id}, #{userId}, #{voucherId}, #{time}, #{payValue}, #{type})")
+    @Insert("INSERT INTO `Order` (id, user_id, voucher_id, time, pay_value, type,image) " +
+            "VALUES (#{id}, #{userId}, #{voucherId}, #{time}, #{payValue}, #{type}, #{image})")
     int insertOrder(@Param("id") Long id,
                     @Param("userId") Integer userId,
                     @Param("voucherId") Integer voucherId,
                     @Param("time") LocalDateTime time,
                     @Param("payValue") Double payValue,
-                    @Param("type") Integer type);
+                    @Param("type") Integer type,
+                    @Param("image") String image);
 
     // 根据userId返回所有订单
     @Select("SELECT * FROM `Order` WHERE user_id = #{userId} ORDER BY time DESC")

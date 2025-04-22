@@ -27,5 +27,7 @@ public class Voucher implements Serializable {
 
     private Integer actualvalue;
 
+    private String image;
+
     private static final long serialVersionUID = 1L;
 }

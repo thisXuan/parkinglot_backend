@@ -47,7 +47,7 @@ public class NavigationServiceImpl implements NavigationService {
     private List<List<Point>> connectedPoints;
 
     @Override
-    public Result getPath(NavigationPoint navigationPoint) {
+    public Result getPath(NavigationPoint navigationPoint,int mode) {
         boolean startFlag = false;
         boolean endFlag = false;
         // 前端传入起点name和终点name，查询数据库获得两个点的point id
@@ -84,7 +84,8 @@ public class NavigationServiceImpl implements NavigationService {
             QueryWrapper<ParkingSpot> parkingLotQueryWrapper = new QueryWrapper<>();
             parkingLotQueryWrapper.eq("spot_name", navigationPoint.getEndName());
             ParkingSpot parkingLot1 = parkingSpotMapper.selectOne(parkingLotQueryWrapper);
-            System.out.println(parkingLot1);
+            System.out.println("parkingLot1"+parkingLot1);
+           // System.out.println(parkingLot1);
             if (parkingLot1 == null) {
                 return Result.fail("起始点未找到");
             }else {
@@ -157,29 +158,66 @@ public class NavigationServiceImpl implements NavigationService {
 
         // 打印当前时间1
         long startTime1 = System.currentTimeMillis();
-        Graph graph = buildGraph(pointMap, points, connections);
-        Graph graph1 = buildGraph(parkingLotpointMap , parkingPoints , parkingConnects);
-        Graph mergeGraph = mergeGraphs(graph,graph1);
+        Graph graph = buildGraph(pointMap, points, connections, mode);
+        Graph graph1 = buildGraph(parkingLotpointMap , parkingPoints , parkingConnects, mode);
 
+        Graph graph_2 = buildGraph(pointMap, points, connections, mode);
+        Graph graph1_2 = buildGraph(parkingLotpointMap , parkingPoints , parkingConnects, mode);
+        Graph mergeGraph = mergeGraphs(graph,graph1);
+        Graph mergeGraph_2 = mergeGraphs(graph_2,graph1_2);
         // 调用 aStar 方法，返回 AStarResult 对象
         AStarResult result = aStar(mergeGraph, startPoint, endPoint);
-
+        AStarResult result_2 = aStar(mergeGraph_2, startPoint, endPoint);
 // 如果没有找到路径，返回失败结果
-        if (result == null || result.getPath().isEmpty()) {
-            return Result.fail("未找到路径");
-        }
-
-// 获取路径和连接点信息
-        List<Point> pathCoordinates = result.getPath();
-        connectedPoints = result.getConnectedPoints();
+        if (mode==1){
+            if (result == null || result.getPath().isEmpty()) {
+                return Result.fail("未找到路径");
+            }
+            // 获取路径和连接点信息
+            List<Point> pathCoordinates = result.getPath();
+            connectedPoints = result.getConnectedPoints();
 
 // 处理路径，仅保留起点和终点所在楼层的路径
-        List<Point> filteredPath = new ArrayList<>();
-        for (Point point : pathCoordinates) {
-            if (point.getFloor().equals(startPoint.getFloor()) || point.getFloor().equals(endPoint.getFloor())) {
-                filteredPath.add(point);
+            List<Point> filteredPath = new ArrayList<>();
+            for (Point point : pathCoordinates) {
+                if (point.getFloor().equals(startPoint.getFloor()) || point.getFloor().equals(endPoint.getFloor())) {
+                    filteredPath.add(point);
+                }
             }
+
+// 打印路径
+        if (!filteredPath.isEmpty()) {
+            System.out.println("Path found:");
+            for (Point point : filteredPath) {
+                System.out.println("Point: (" + point.getId() + ", " + point.getX() + ", " + point.getY() + ", " + point.getFloor() + ", " + point.isElevator() + ")");
+            }
+        } else {
+            System.out.println("No path found.");
         }
+            List<String> storeNames = getStoreNames(startPoint.getFloor());
+
+            ResultPointDTO resultPointDTO = new ResultPointDTO();
+            resultPointDTO.setFilteredPath(filteredPath);
+            resultPointDTO.setStoreNames(storeNames);
+
+// 返回最终结果
+            return Result.ok(resultPointDTO);
+
+        }else {
+            if (result_2 == null || result_2.getPath().isEmpty()) {
+                return Result.fail("未找到路径");
+            }
+            // 获取路径和连接点信息
+            List<Point> pathCoordinates = result_2.getPath();
+            connectedPoints = result_2.getConnectedPoints();
+
+// 处理路径，仅保留起点和终点所在楼层的路径
+            List<Point> filteredPath = new ArrayList<>();
+            for (Point point : pathCoordinates) {
+                if (point.getFloor().equals(startPoint.getFloor()) || point.getFloor().equals(endPoint.getFloor())) {
+                    filteredPath.add(point);
+                }
+            }
 
 //// 打印路径
 //        if (!filteredPath.isEmpty()) {
@@ -190,14 +228,19 @@ public class NavigationServiceImpl implements NavigationService {
 //        } else {
 //            System.out.println("No path found.");
 //        }
-        List<String> storeNames = getStoreNames(startPoint.getFloor());
+            List<String> storeNames = getStoreNames(startPoint.getFloor());
 
-        ResultPointDTO resultPointDTO = new ResultPointDTO();
-        resultPointDTO.setFilteredPath(filteredPath);
-        resultPointDTO.setStoreNames(storeNames);
+            ResultPointDTO resultPointDTO = new ResultPointDTO();
+            resultPointDTO.setFilteredPath(filteredPath);
+            resultPointDTO.setStoreNames(storeNames);
 
 // 返回最终结果
-        return Result.ok(resultPointDTO);
+            return Result.ok(resultPointDTO);
+
+        }
+
+
+
 
     }
 
@@ -312,22 +355,22 @@ public class NavigationServiceImpl implements NavigationService {
         }
 
         // 跨图连接1: (31.23, 67.52, B1, true) -> (51.3, 40.69, B2, true)
-        Point point1Graph = findPointInGraph(graph, 31.23, 67.52, "B1", true);
-        Point point1Graph1 = findPointInGraph(graph1, 51.3, 40.69, "B2", true);
+        Point point1Graph = findPointInGraph(graph, 31.23, 67.52, "B1", 1);//529
+        Point point1Graph1 = findPointInGraph(graph1, 51.3, 40.69, "B2", 1);
         if (point1Graph != null && point1Graph1 != null) {
             mergedGraph.addEdge(point1Graph, point1Graph1);
         }
 
         // 跨图连接2: (69.32, 52.74, B1, true) -> (30.46, 17.99, B2, true)
-        Point point2Graph = findPointInGraph(graph, 69.32, 52.74, "B1", true);
-        Point point2Graph1 = findPointInGraph(graph1, 30.46, 17.99, "B2", true);
+        Point point2Graph = findPointInGraph(graph, 69.32, 52.74, "B1", 1);//531
+        Point point2Graph1 = findPointInGraph(graph1, 30.46, 17.99, "B2", 1);
         if (point2Graph != null && point2Graph1 != null) {
             mergedGraph.addEdge(point2Graph, point2Graph1);
         }
 
         // 跨图连接3: (53.82, 75.75, B1, true) -> (55.65, 26.88, B2, true)
-        Point point3Graph = findPointInGraph(graph, 53.82, 75.75, "B1", true);
-        Point point3Graph1 = findPointInGraph(graph1, 55.65, 26.88, "B2", true);
+        Point point3Graph = findPointInGraph(graph, 53.82, 75.75, "B1", 1);//532
+        Point point3Graph1 = findPointInGraph(graph1, 55.65, 26.88, "B2", 1);
         if (point3Graph != null && point3Graph1 != null) {
             mergedGraph.addEdge(point3Graph, point3Graph1);
         }
@@ -336,10 +379,10 @@ public class NavigationServiceImpl implements NavigationService {
     }
 
     // 根据坐标和楼层信息查找点
-    private Point findPointInGraph(Graph graph, double x, double y, String floor, boolean isElevator) {
+    private Point findPointInGraph(Graph graph, double x, double y, String floor, Integer isElevator) {
         for (Map.Entry<Point, List<Point>> entry : graph.getAdjList().entrySet()) {
             Point point = entry.getKey();
-            if (point.getX() == x && point.getY() == y && point.getFloor().equals(floor) && point.isElevator() == isElevator) {
+            if (point.getX() == x && point.getY() == y && point.getFloor().equals(floor) && point.isElevator().equals(isElevator)) {
                 return point;
             }
         }
@@ -347,7 +390,7 @@ public class NavigationServiceImpl implements NavigationService {
     }
 
 
-    private Graph buildGraph(Map<Integer, Point> pointMap, List<Point> points, List<Connection> connections) {
+    private Graph buildGraph(Map<Integer, Point> pointMap, List<Point> points, List<Connection> connections, int mode) {
         Graph graph = new Graph();
 
         for (Connection connection : connections) {
@@ -362,11 +405,11 @@ public class NavigationServiceImpl implements NavigationService {
                 // 获取点的楼层和电梯信息
                 String floor1 = point1.getFloor();
                 String floor2 = point2.getFloor();
-                boolean isElevator1 = point1.isElevator();
-                boolean isElevator2 = point2.isElevator();
+                Integer isElevator1 = point1.isElevator();
+                Integer isElevator2 = point2.isElevator();
 
                 // 判断是否可以建立连接
-                if (floor1.equals(floor2) || (isElevator1 && isElevator2)) {
+                if (floor1.equals(floor2) || (isElevator2==mode&&(isElevator1.equals(isElevator2)))) {
                     // 如果两个点在同一层，或者它们都与电梯连接，则建立边
                     //graph.addEdge(point1, point1);
                     graph.addEdge(point1, point2);
@@ -429,7 +472,7 @@ public class NavigationServiceImpl implements NavigationService {
             }
         }
 
-        System.out.println("未找到路径.");
+        System.out.println("未找到路径astar.");
         return null; // 没有找到路径
     }
 

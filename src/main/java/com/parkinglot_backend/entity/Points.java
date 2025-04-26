@@ -28,7 +28,7 @@ public class Points implements Serializable {
     private String floor;
 
     @TableField("is_elevator")
-    private Boolean isElevator;
+    private Integer isElevator;
 
     // 其他字段...
 }

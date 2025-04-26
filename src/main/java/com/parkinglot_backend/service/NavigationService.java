@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface NavigationService {
 
-    Result getPath(NavigationPoint navigationPoint);
+    Result getPath(NavigationPoint navigationPoint,int mode);
 
     //List<String> getStoreNames();
 }

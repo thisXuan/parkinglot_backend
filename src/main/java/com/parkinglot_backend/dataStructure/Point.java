@@ -15,9 +15,9 @@ public class Point {
     public double x;
     public double y;
     public String floor;        // 楼层信息
-    public boolean isElevator;  // 是否是电梯
+    public Integer isElevator;  // 是否是电梯
 
-    public Point(int id, double x, double y, String floor, boolean isElevator) {
+    public Point(int id, double x, double y, String floor, Integer isElevator) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -29,7 +29,7 @@ public class Point {
     public String getFloor() {
         return floor;
     }
-    public boolean getIsElevator() {return isElevator;}
+    public Integer getIsElevator() {return isElevator;}
 
     // 设置楼层信息
     public void setFloor(String floor) {
@@ -37,12 +37,12 @@ public class Point {
     }
 
     // 获取电梯信息
-    public boolean isElevator() {
+    public Integer isElevator() {
         return isElevator;
     }
 
     // 设置电梯信息
-    public void setElevator(boolean elevator) {
+    public void setElevator(Integer elevator) {
         isElevator = elevator;
     }
 

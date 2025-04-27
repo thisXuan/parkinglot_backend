@@ -26,8 +26,8 @@ public class NavigationController {
 
     @Operation(summary = "输入起始点店铺名进行导航")
     @GetMapping("/getPath")
-    public Result getPath(@RequestBody NavigationPoint navigationPoint) {
-        return navigationService.getPath(navigationPoint);
+    public Result getPath(@RequestBody NavigationPoint navigationPoint , @RequestParam int mode) {
+        return navigationService.getPath(navigationPoint,mode);
     }
 
 

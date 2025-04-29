@@ -131,7 +131,7 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
 
         SearchRequest searchRequest = new SearchRequest("store_index"); // 索引名称
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query, "storeName")); // 根据店铺名称和地址搜索
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query, "storeName")); // 根据店铺名称
         searchRequest.source(searchSourceBuilder);
 
         try {

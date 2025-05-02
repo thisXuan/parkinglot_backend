@@ -1,6 +1,7 @@
 package com.parkinglot_backend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.parkinglot_backend.dto.*;
 import com.parkinglot_backend.entity.User;
@@ -198,6 +199,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                         user.getType()))
                 .collect(Collectors.toList());
         return Result.ok(dtoList);
+    }
+
+    @Override
+    public Result updateUsers(String token,User user) {
+        Claims claims = JwtUtils.parseJWT(token);
+        Integer userId = claims.get("UserId", Integer.class);
+        int type = userMapper.getUserTypeById(userId);
+        if(type == 0){
+            return Result.fail("非管理员无修改资质");
+        }
+        // 获取user的id
+        Integer userIdToUpdate = user.getId();
+        if (userIdToUpdate == null) {
+            return Result.fail("User id 不存在");
+        }
+
+        // 构造更新条件
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", userIdToUpdate);
+
+        // 将user对象的id设置为null，避免更新id字段
+        user.setId(null);
+
+        // 更新数据库中对应行的其他内容
+        int updateRows = userMapper.update(user, updateWrapper);
+        if (updateRows > 0) {
+            return Result.ok("用户更新成功");
+        } else {
+            return Result.fail("用户更新失败");
+        }
     }
 
     /**

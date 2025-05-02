@@ -29,4 +29,6 @@ public interface UserService extends IService<User> {
     Result getUserRole(String token);
 
     Result getUsers(String token);
+
+    Result updateUsers(String token,User user);
 }

@@ -4,6 +4,7 @@ import com.parkinglot_backend.dto.ForgetPasswordDTO;
 import com.parkinglot_backend.dto.LoginFormDTO;
 import com.parkinglot_backend.dto.RegisterDTO;
 import com.parkinglot_backend.dto.ReviewDTO;
+import com.parkinglot_backend.entity.User;
 import com.parkinglot_backend.service.CouponService;
 import com.parkinglot_backend.service.ReviewService;
 import com.parkinglot_backend.service.UserService;
@@ -62,6 +63,12 @@ public class UserController {
     @GetMapping("/getUsers")
     public Result getUsers(@RequestHeader("token")String token){
         return userService.getUsers(token);
+    }
+
+    @Operation(summary = "修改用户信息")
+    @PostMapping("/updateUser")
+    public Result updateUsers(@RequestHeader("token")String token,@RequestBody User user){
+        return userService.updateUsers(token,user);
     }
 
     @Operation(summary = "注册账号")

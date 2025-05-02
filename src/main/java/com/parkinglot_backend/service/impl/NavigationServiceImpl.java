@@ -314,6 +314,9 @@ public class NavigationServiceImpl implements NavigationService {
             String storeName = storeMapper.getStoreNameById(storeId);
 
             if (storeName != null && !storeNameSet.contains(storeName)) {
+                if(storeName.equals("Calvin Klein Jeans")||storeName.equals("MINTYGREEN周生生")||storeName.equals("九木杂物社")||storeName.equals("小米之家")){
+                    continue;
+                }
                 storeNames.add(storeName);
                 storeNameSet.add(storeName); // 将商铺名加入到集合中，防止重复添加
                 System.out.println(storeName);
@@ -446,7 +449,9 @@ public class NavigationServiceImpl implements NavigationService {
                 // 收集路径中每个点的相连点，使用 Set 避免重复连接点
                 for (Point point : path) {
                     Set<Point> uniqueNeighbors = new HashSet<>(graph.getNeighbors(point)); // 使用 Set 去重
-                    connectedPoints.add(new ArrayList<>(uniqueNeighbors)); // 转换回 List 添加到 connectedPoints
+                    if(!point.getFloor().equals("B2")){
+                        connectedPoints.add(new ArrayList<>(uniqueNeighbors)); // 转换回 List 添加到 connectedPoints
+                    }
                 }
 
                 return new AStarResult(path, connectedPoints);

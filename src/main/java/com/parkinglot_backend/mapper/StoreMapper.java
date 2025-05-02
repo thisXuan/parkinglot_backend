@@ -18,6 +18,8 @@ public interface StoreMapper extends BaseMapper<Store> {
     @Select("SELECT * FROM Store WHERE StoreName LIKE CONCAT('%', #{name}, '%')")
     List<Store> searchStore(String name);
 
+    @Select("SELECT StoreName FROM Store WHERE StoreName LIKE CONCAT('%', #{name}, '%')")
+    List<String> searchStoreName1(String name);
     @Select("SELECT * FROM Store")
     List<Store> findAllStores();
 

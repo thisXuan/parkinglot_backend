@@ -65,17 +65,24 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
         SearchRequest searchRequest = new SearchRequest("store_index"); // 索引名称
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(query, "storeName", "address");
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query, "storeName", "address")); // 根据店铺名称和地址搜索
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(query, "storeName")); // 根据店铺名称和地址搜索
 
         searchRequest.source(searchSourceBuilder);
 
         try {
             SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
             List<Store> stores = parseSearchResponse(searchResponse);
-            if (stores.isEmpty()) {
+            List<Store> allstores = new ArrayList<>(stores);
+            List<Store> otherStores = storeMapper.searchStore(query);
+            System.out.println(otherStores);
+            allstores.addAll(otherStores);
+            System.out.println(allstores);
+            allstores = new ArrayList<>(new LinkedHashSet<>(allstores)); // 去重
+            System.out.println(allstores);
+            if (allstores.isEmpty()) {
                 return Result.fail("未查找到相关店铺");
             }
-            return Result.ok(stores);
+            return Result.ok(allstores);
         } catch (IOException e) {
             e.printStackTrace();
             return Result.fail("查询失败");
@@ -140,10 +147,11 @@ public class StoreServiceImpl extends ServiceImpl<StoreMapper, Store>
 
             // 使用 MyBatis-Plus 进行模糊查询
             List<String> parkingNames = parkingSpotMapper.findSpotNamesByQuery(query);
-
+            List<String> storeName1 = storeMapper.searchStoreName1(query);
             // 合并两个结果列表，并去重
             List<String> allNames = new ArrayList<>(storeNames);
             allNames.addAll(parkingNames);
+            allNames.addAll(storeName1);
             allNames = new ArrayList<>(new LinkedHashSet<>(allNames)); // 去重
 
             if (allNames.isEmpty()) {

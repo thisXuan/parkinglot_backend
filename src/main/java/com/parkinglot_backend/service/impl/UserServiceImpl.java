@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -102,7 +103,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setPhone(registerDTO.getPhone());
         // 这里应该使用加密密码
         user.setPassword(encryptPassword(registerDTO.getPassword()));
-        user.setCreate_time(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        user.setCreate_time(LocalDateTime.now(ZoneId.of("UTC+08:00")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         try {
             save(user);
         } catch (Exception e) {

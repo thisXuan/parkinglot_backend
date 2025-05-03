@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ public class ReviewServiceImpl implements ReviewService {
         review.setRating(reviewDTO.getRating());
         review.setTags(jsonTags); // 将 List<String> 转换为 JSONObject
         review.setComment(reviewDTO.getComment());
-        review.setTime(Timestamp.valueOf(LocalDateTime.now())); // 使用 Timestamp 替代 Date
+        review.setTime(Timestamp.valueOf(LocalDateTime.now(ZoneId.of("UTC+16:00")))); // 使用 Timestamp 替代 Date
 
         int result = reviewMapper.insertReview(review);
         if (result > 0) {

@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -52,7 +53,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher>
             return Result.fail("没有库存，购买失败");
         }
         double pay_Value = voucherMapper.selectPayValueById(voucherId);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC+16:00"));
         System.out.println(now);
 
         //orderMapper.insertOrder(redisIdWorker.nextId("order"), userId, voucherId, now, pay_Value, 2);
@@ -89,7 +90,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher>
         }
         double pay_Value = voucherMapper.selectPayValueById(voucherId);
         String image = voucherMapper.selectImageById(voucherId);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC+16:00"));
         System.out.println(now);
 
         long orderId = redisIdWorker.nextId("order");
